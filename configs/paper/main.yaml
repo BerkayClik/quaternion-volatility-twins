@@ -1,0 +1,15 @@
+# Core comparison: every dataset x both tasks, price-only vs full 4-group input.
+name: main
+datasets: [btc_1d, bnb_1d, eth_1d, sol_1d, btc_4h, bnb_4h, eth_4h, sol_4h, xrp_4h]
+tasks: [range, return]
+groupsets:
+  P: [price]
+  PMSE: [price, market, social, sentiment]
+models: [persistence, mean, har, ridge,
+         lstm, lstm_attn, qlstm, qlstm_attn,
+         hq_concat, hq_concat_attn, hq_gattn, hq_gattn_attn, hq_meta, hq_meta_attn]
+seeds: [0, 1, 2, 3, 4]
+window: {1d: 30, 4h: 42}
+folds: {n: 4, test_days: 90, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

@@ -1,0 +1,16 @@
+# FINAL: pooled cross-coin models (per-coin standardization), 15 coins, 1h.
+name: final_pool_1h
+start: "2023-01-01"
+datasets: [btc_1h, eth_1h, sol_1h, bnb_1h, xrp_1h, ada_1h, doge_1h, link_1h, ltc_1h, dot_1h, avax_1h, trx_1h, bch_1h, xlm_1h, atom_1h]
+tasks: [range]
+groupsets:
+  P: [price]
+  PM: [price, market]
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [lstm, qlstm, transformer, qtransformer, hl_meta, hq_meta, ht_meta, hqt_meta, hl_gattn, hq_gattn, ht_concat, hqt_concat]
+seeds: [0, 1, 2, 3, 4]
+window: {1h: 48}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

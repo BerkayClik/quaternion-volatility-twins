@@ -1,0 +1,16 @@
+\begin{tabular}{lcccccc}
+\toprule
+ & \multicolumn{4}{c}{$\delta = 0$} & \multicolumn{2}{c}{$\delta = 0.25$} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-7}
+Combination & Fee $\gamma{=}10$ & Fee $\gamma{=}1$ & Eq.\ vol. & $\Delta$SR & Fee $\gamma{=}10$ & $\Delta$SR \\
+\midrule
+HAR + \HQ{} (meta, PMSE) & $+419$ \scriptsize[$+89$, $+722$] & $+47$ \scriptsize[$-302$, $+361$] & $-12$ \scriptsize[$-338$, $+271$] & $0.00$ \scriptsize[$-0.08$, $+0.07$] & $+318$ \scriptsize[$-120$, $+796$] & $-0.02$ \scriptsize[$-0.11$, $+0.06$] \\
+HAR + H-LSTM (group attn., PM) & $+375$ \scriptsize[$-27$, $+730$] & $-92$ \scriptsize[$-531$, $+290$] & $-164$ \scriptsize[$-591$, $+195$] & $-0.04$ \scriptsize[$-0.14$, $+0.05$] & $+235$ \scriptsize[$-231$, $+726$] & $-0.04$ \scriptsize[$-0.13$, $+0.06$] \\
+HAR + H-LSTM (group attn., PMC) & $+372$ \scriptsize[$-58$, $+774$] & $-86$ \scriptsize[$-525$, $+315$] & $-164$ \scriptsize[$-588$, $+220$] & $-0.04$ \scriptsize[$-0.14$, $+0.05$] & $-106$ \scriptsize[$-542$, $+395$] & $-0.12$ \scriptsize[$-0.21$, $-0.03$] \\
+HAR + Transformer (PMSE) & $+352$ \scriptsize[$-39$, $+690$] & $-164$ \scriptsize[$-573$, $+184$] & $-249$ \scriptsize[$-645$, $+75$] & $-0.06$ \scriptsize[$-0.15$, $+0.02$] & $+350$ \scriptsize[$-46$, $+784$] & $-0.02$ \scriptsize[$-0.11$, $+0.07$] \\
+HAR + LightGBM-S (PM) & $+344$ \scriptsize[$-64$, $+738$] & $+3$ \scriptsize[$-385$, $+369$] & $-46$ \scriptsize[$-440$, $+314$] & $-0.01$ \scriptsize[$-0.11$, $+0.07$] & $+404$ \scriptsize[$-43$, $+929$] & $+0.04$ \scriptsize[$-0.04$, $+0.13$] \\
+HAR + LightGBM-S (lagged, PM) & $+417$ \scriptsize[$-11$, $+815$] & $+22$ \scriptsize[$-402$, $+405$] & $-34$ \scriptsize[$-450$, $+327$] & $-0.01$ \scriptsize[$-0.11$, $+0.08$] & $+337$ \scriptsize[$-140$, $+879$] & $-0.01$ \scriptsize[$-0.10$, $+0.09$] \\
+HAR + HAR-S & $+209$ \scriptsize[$-131$, $+497$] & $+17$ \scriptsize[$-312$, $+292$] & $-10$ \scriptsize[$-324$, $+260$] & $0.00$ \scriptsize[$-0.08$, $+0.06$] & $+126$ \scriptsize[$-213$, $+467$] & $0.00$ \scriptsize[$-0.07$, $+0.07$] \\
+HAR (level-calibrated) & $+496$ \scriptsize[$+337$, $+650$] & $+90$ \scriptsize[$-71$, $+237$] & $+19$ \scriptsize[$-62$, $+95$] & $+0.01$ \scriptsize[$-0.01$, $+0.02$] & $+425$ \scriptsize[$+161$, $+703$] & $0.00$ \scriptsize[$-0.06$, $+0.04$] \\
+\bottomrule
+\end{tabular}

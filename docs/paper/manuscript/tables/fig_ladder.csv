@@ -1,0 +1,149 @@
+effect,freq,comparison,ratio,change_pct
+Pooling across coins,4h,lstm pooled/single (seeds 0-2),0.8720298447370551,-12.797015526294487
+Pooling across coins,4h,qlstm pooled/single (seeds 0-2),0.8971359418017014,-10.286405819829858
+Pooling across coins,4h,transformer pooled/single (seeds 0-2),0.9057799093811257,-9.422009061887426
+Pooling across coins,4h,qtransformer pooled/single (seeds 0-2),0.8686944045223085,-13.130559547769149
+Pooling across coins,4h,hl_meta pooled/single (seeds 0-2),0.9028330473629791,-9.716695263702091
+Pooling across coins,4h,hq_meta pooled/single (seeds 0-2),0.9044728058345045,-9.552719416549548
+Pooling across coins,4h,ht_meta pooled/single (seeds 0-2),0.9527384683427176,-4.726153165728242
+Pooling across coins,4h,hqt_meta pooled/single (seeds 0-2),0.928892567388465,-7.110743261153496
+Pooling across coins,1h,lstm pooled/single (seeds 0-2),0.9354704995654608,-6.45295004345392
+Pooling across coins,1h,qlstm pooled/single (seeds 0-2),0.9394729117234876,-6.052708827651243
+Pooling across coins,1h,transformer pooled/single (seeds 0-2),0.9510279906872962,-4.897200931270385
+Pooling across coins,1h,qtransformer pooled/single (seeds 0-2),0.942498989249754,-5.750101075024605
+Pooling across coins,1h,hl_meta pooled/single (seeds 0-2),0.9753961329350759,-2.4603867064924123
+Pooling across coins,1h,hq_meta pooled/single (seeds 0-2),0.9771016775124406,-2.289832248755941
+Pooling across coins,1h,ht_meta pooled/single (seeds 0-2),0.995945590357618,-0.40544096423820175
+Pooling across coins,1h,hqt_meta pooled/single (seeds 0-2),0.9834021192570971,-1.6597880742902915
+Pooling across coins,1d,lstm pooled/single (seeds 0-2),0.8716004633203411,-12.839953667965887
+Pooling across coins,1d,qlstm pooled/single (seeds 0-2),0.8550157654084851,-14.49842345915149
+Pooling across coins,1d,transformer pooled/single (seeds 0-2),0.8444142035558353,-15.55857964441647
+Pooling across coins,1d,qtransformer pooled/single (seeds 0-2),0.8495117619955969,-15.048823800440314
+Pooling across coins,1d,hl_meta pooled/single (seeds 0-2),0.937483173712514,-6.2516826287486005
+Pooling across coins,1d,hq_meta pooled/single (seeds 0-2),0.9030689578263218,-9.693104217367821
+Pooling across coins,1d,ht_meta pooled/single (seeds 0-2),0.885245340064971,-11.475465993502898
+Pooling across coins,1d,hqt_meta pooled/single (seeds 0-2),0.8760497753246939,-12.395022467530614
+Calendar inputs,4h,hl_gattn-pool PMC / PM,0.96072372036401,-3.927627963599001
+Calendar inputs,4h,hq_gattn-pool PMC / PM,0.9355097686482154,-6.4490231351784555
+Calendar inputs,4h,hqt_concat-pool PMC / PM,0.9554274485796505,-4.457255142034954
+Calendar inputs,4h,ht_concat-pool PMC / PM,0.9498432420815124,-5.0156757918487616
+Calendar inputs,4h,lstm-pool PMC / PM,0.9195012884572435,-8.049871154275646
+Calendar inputs,4h,transformer-pool PMC / PM,0.9519749740463742,-4.802502595362579
+Calendar inputs,1d,hl_gattn-pool PMC / PM,0.929648334433736,-7.035166556626404
+Calendar inputs,1d,hq_gattn-pool PMC / PM,0.9164756583287984,-8.35243416712016
+Calendar inputs,1d,hqt_concat-pool PMC / PM,0.976512148356464,-2.348785164353595
+Calendar inputs,1d,ht_concat-pool PMC / PM,0.9625080275706862,-3.749197242931379
+Calendar inputs,1d,lstm-pool PMC / PM,0.910459516558751,-8.9540483441249
+Calendar inputs,1d,transformer-pool PMC / PM,1.0040035314966589,0.40035314966588853
+Calendar inputs,1h,hl_gattn-pool PMC / PM,0.954623930716317,-4.537606928368298
+Calendar inputs,1h,hq_gattn-pool PMC / PM,0.9552695945837733,-4.473040541622675
+Calendar inputs,1h,hqt_concat-pool PMC / PM,0.9601206997595116,-3.987930024048836
+Calendar inputs,1h,ht_concat-pool PMC / PM,0.957863948458209,-4.213605154179101
+Calendar inputs,1h,lstm-pool PMC / PM,0.9575894503314138,-4.241054966858615
+Calendar inputs,1h,transformer-pool PMC / PM,0.967708842261502,-3.2291157738498
+Market data (intraday),4h,lstm-pool PM/P,0.9565131386839376,-4.348686131606239
+Market data (intraday),4h,qlstm-pool PM/P,0.9692832402201113,-3.0716759779888747
+Market data (intraday),4h,qtransformer-pool PM/P,0.9565775954584568,-4.3422404541543225
+Market data (intraday),4h,transformer-pool PM/P,0.9527963580993272,-4.720364190067283
+Market data (intraday),1h,lstm-pool PM/P,0.9634042336116228,-3.659576638837725
+Market data (intraday),1h,qlstm-pool PM/P,0.9621153028721368,-3.7884697127863243
+Market data (intraday),1h,qtransformer-pool PM/P,0.9588521281734386,-4.114787182656143
+Market data (intraday),1h,transformer-pool PM/P,0.9603727344394302,-3.9627265560569835
+Social + sentiment data,4h,hl_gattn-pool PMSE/PM,1.016364732625027,1.6364732625026912
+Social + sentiment data,4h,hq_gattn-pool PMSE/PM,0.9944859789625544,-0.5514021037445582
+Social + sentiment data,4h,hqt_concat-pool PMSE/PM,1.0108085985751365,1.0808598575136497
+Social + sentiment data,4h,ht_concat-pool PMSE/PM,1.0014726830504448,0.14726830504447896
+Social + sentiment data,4h,lstm-pool PMSE/PM,1.0000247264426625,0.0024726442662492687
+Social + sentiment data,4h,qlstm-pool PMSE/PM,0.9939144541380006,-0.6085545861999386
+Social + sentiment data,4h,qtransformer-pool PMSE/PM,1.0002337778962709,0.02337778962708814
+Social + sentiment data,4h,transformer-pool PMSE/PM,1.0144880465884405,1.4488046588440495
+Social + sentiment data,1h,hl_gattn-pool PMSE/PM,1.000400335023976,0.04003350239760728
+Social + sentiment data,1h,hq_gattn-pool PMSE/PM,1.0006572123836328,0.06572123836328103
+Social + sentiment data,1h,hqt_concat-pool PMSE/PM,1.0007939805422994,0.07939805422993995
+Social + sentiment data,1h,ht_concat-pool PMSE/PM,1.0019102301190912,0.1910230119091194
+Social + sentiment data,1h,lstm-pool PMSE/PM,1.0062171657292405,0.621716572924047
+Social + sentiment data,1h,qlstm-pool PMSE/PM,1.0026987087439343,0.2698708743934297
+Social + sentiment data,1h,qtransformer-pool PMSE/PM,1.0063758828165117,0.6375882816511691
+Social + sentiment data,1h,transformer-pool PMSE/PM,1.0068471721467256,0.6847172146725589
+Social + sentiment data,1d,hl_gattn-pool PMSE/PM,1.045703504253769,4.570350425376901
+Social + sentiment data,1d,hq_gattn-pool PMSE/PM,1.0171911418778503,1.7191141877850313
+Social + sentiment data,1d,hqt_concat-pool PMSE/PM,1.0202570191549345,2.0257019154934497
+Social + sentiment data,1d,ht_concat-pool PMSE/PM,0.99310646610795,-0.6893533892050052
+Social + sentiment data,1d,lstm-pool PMSE/PM,1.02107177873475,2.107177873475008
+Social + sentiment data,1d,qlstm-pool PMSE/PM,1.0247113232924423,2.47113232924423
+Social + sentiment data,1d,qtransformer-pool PMSE/PM,1.0313712886091642,3.137128860916416
+Social + sentiment data,1d,transformer-pool PMSE/PM,1.0240524307732106,2.405243077321062
+Hierarchy (single coin),1h,hl_meta/lstm,0.9503247619019904,-4.967523809800955
+Hierarchy (single coin),1h,ht_meta/transformer,0.962020993586729,-3.797900641327101
+Hierarchy (single coin),1h,hq_meta/qlstm,0.9562901000710833,-4.370989992891672
+Hierarchy (single coin),1h,hqt_meta/qtransformer,0.9613477479853881,-3.8652252014611865
+Hierarchy (pooled),1h,hl_meta-pool/lstm-pool,0.9922052394119623,-0.7794760588037741
+Hierarchy (pooled),1h,ht_meta-pool/transformer-pool,1.0076692289970306,0.7669228997030597
+Hierarchy (pooled),1h,hq_meta-pool/qlstm-pool,0.9945233598959164,-0.5476640104083552
+Hierarchy (pooled),1h,hqt_meta-pool/qtransformer-pool,1.003883559883987,0.3883559883987031
+Hierarchy (single coin),4h,hl_meta/lstm,0.9392536837337827,-6.074631626621729
+Hierarchy (single coin),4h,ht_meta/transformer,0.9562465908568285,-4.3753409143171496
+Hierarchy (single coin),4h,hq_meta/qlstm,0.9534660889765333,-4.653391102346671
+Hierarchy (single coin),4h,hqt_meta/qtransformer,0.9490032547797115,-5.099674522028852
+Hierarchy (pooled),4h,hl_meta-pool/lstm-pool,0.9715272711101028,-2.847272888989716
+Hierarchy (pooled),4h,ht_meta-pool/transformer-pool,1.0080659383236523,0.8065938323652322
+Hierarchy (pooled),4h,hq_meta-pool/qlstm-pool,0.9583241543244138,-4.167584567558624
+Hierarchy (pooled),4h,hqt_meta-pool/qtransformer-pool,1.0158958467991124,1.5895846799112379
+Hierarchy (single coin),1d,hl_meta/lstm,0.9175976634904902,-8.240233650950978
+Hierarchy (single coin),1d,ht_meta/transformer,0.9512559798505875,-4.874402014941248
+Hierarchy (single coin),1d,hq_meta/qlstm,0.9311198111344241,-6.88801888655759
+Hierarchy (single coin),1d,hqt_meta/qtransformer,0.9631793437960827,-3.682065620391728
+Hierarchy (pooled),1d,hl_meta-pool/lstm-pool,0.9730637840570009,-2.693621594299911
+Hierarchy (pooled),1d,ht_meta-pool/transformer-pool,0.9895258803747944,-1.0474119625205613
+Hierarchy (pooled),1d,hq_meta-pool/qlstm-pool,0.9813373219673279,-1.8662678032672075
+Hierarchy (pooled),1d,hqt_meta-pool/qtransformer-pool,0.9955846166476707,-0.4415383352329272
+Quaternion algebra,4h,single 4h: QLSTM / LSTM,0.9922131870287946,-0.7786812971205426
+Quaternion algebra,4h,single 4h: QTransformer / Transformer,1.0324164964975808,3.2416496497580827
+Quaternion algebra,4h,single 4h: H-QLSTM (meta) / H-LSTM (meta),1.0073227880618492,0.7322788061849161
+Quaternion algebra,4h,single 4h: H-QTransformer (meta) / H-Transformer (meta),1.0244683250661777,2.4468325066177687
+Quaternion algebra,4h,pooled 4h: QLSTM / LSTM,1.0196461495644322,1.9646149564432225
+Quaternion algebra,4h,pooled 4h: QTransformer / Transformer,0.990718543759081,-0.9281456240919028
+Quaternion algebra,4h,pooled 4h: H-QLSTM (meta) / H-LSTM (meta),1.0057111891652988,0.571118916529878
+Quaternion algebra,4h,pooled 4h: H-QTransformer (meta) / H-Transformer (meta),0.9984257832404434,-0.15742167595566015
+Quaternion algebra,4h,pooled 4h: H-QLSTM (group attn.) / H-LSTM (group attn.),1.012880057101354,1.2880057101354092
+Quaternion algebra,4h,pooled 4h: H-QTransformer (concat) / H-Transformer (concat),1.001782191929762,0.17821919297620337
+Quaternion algebra,1h,single 1h: QLSTM / LSTM,0.9949955263458904,-0.5004473654109609
+Quaternion algebra,1h,single 1h: QTransformer / Transformer,1.0115914713851033,1.1591471385103302
+Quaternion algebra,1h,single 1h: H-QLSTM (meta) / H-LSTM (meta),1.0012633175507415,0.1263317550741494
+Quaternion algebra,1h,single 1h: H-QTransformer (meta) / H-Transformer (meta),1.0108431009120755,1.084310091207552
+Quaternion algebra,1h,pooled 1h: QLSTM / LSTM,0.9991159239236376,-0.08840760763624278
+Quaternion algebra,1h,pooled 1h: QTransformer / Transformer,1.0010002470082562,0.10002470082561832
+Quaternion algebra,1h,pooled 1h: H-QLSTM (meta) / H-LSTM (meta),1.0014463417021318,0.14463417021317593
+Quaternion algebra,1h,pooled 1h: H-QTransformer (meta) / H-Transformer (meta),0.9972367531130344,-0.2763246886965609
+Quaternion algebra,1h,pooled 1h: H-QLSTM (group attn.) / H-LSTM (group attn.),1.0040472467220518,0.40472467220518116
+Quaternion algebra,1h,pooled 1h: H-QTransformer (concat) / H-Transformer (concat),0.994949595607672,-0.5050404392327956
+Quaternion algebra,1d,single 1d: QLSTM / LSTM,1.0191266238035623,1.9126623803562337
+Quaternion algebra,1d,single 1d: QTransformer / Transformer,1.0205142807405845,2.051428074058448
+Quaternion algebra,1d,single 1d: H-QLSTM (meta) / H-LSTM (meta),1.0364820249774729,3.648202497747288
+Quaternion algebra,1d,single 1d: H-QTransformer (meta) / H-Transformer (meta),1.0326142962190783,3.26142962190783
+Quaternion algebra,1d,pooled 1d: QLSTM / LSTM,0.9974060142707832,-0.25939857292167634
+Quaternion algebra,1d,pooled 1d: QTransformer / Transformer,1.0220795449205542,2.2079544920554195
+Quaternion algebra,1d,pooled 1d: H-QLSTM (meta) / H-LSTM (meta),1.0059131580180125,0.591315801801251
+Quaternion algebra,1d,pooled 1d: H-QTransformer (meta) / H-Transformer (meta),1.0283173197641164,2.8317319764116444
+Quaternion algebra,1d,pooled 1d: H-QLSTM (group attn.) / H-LSTM (group attn.),1.0085435587696066,0.8543558769606552
+Quaternion algebra,1d,pooled 1d: H-QTransformer (concat) / H-Transformer (concat),1.039591840386623,3.959184038662289
+Fusion operator,4h,hq phm/meta PMSN,1.003238364049693,0.323836404969291
+Fusion operator,4h,hq phm/meta PMNN,1.0086161124134638,0.8616112413463828
+Fusion operator,4h,hq phm/meta PMTE,0.996845676678145,-0.3154323321854946
+Fusion operator,4h,hq phm/meta PTSE,0.9974265984270496,-0.25734015729503845
+Fusion operator,4h,hq dense/meta PMSN,0.9935416631145236,-0.6458336885476368
+Fusion operator,4h,hq dense/meta PMNN,1.0014232596334542,0.14232596334542436
+Fusion operator,4h,hq dense/meta PMTE,0.9995393697616852,-0.04606302383147742
+Fusion operator,4h,hq dense/meta PTSE,0.9988904917514,-0.11095082486000107
+Fusion operator,4h,hl phm/meta PMSN,0.9974329496108456,-0.25670503891543905
+Fusion operator,4h,hl phm/meta PMNN,0.998204728308614,-0.17952716913860467
+Fusion operator,4h,hl phm/meta PMTE,0.9823748203615316,-1.7625179638468436
+Fusion operator,4h,hl phm/meta PTSE,0.99359678970259,-0.6403210297409978
+Fusion operator,4h,hl dense/meta PMSN,0.999971226348842,-0.002877365115805386
+Fusion operator,4h,hl dense/meta PMNN,1.0003576860684276,0.03576860684275651
+Fusion operator,4h,hl dense/meta PMTE,0.9900375657799746,-0.9962434220025407
+Fusion operator,4h,hl dense/meta PTSE,0.9967394564902352,-0.32605435097647906
+Fusion operator,4h,hq phmn/metan PMSE,0.99714225571559,-0.2857744284409991
+Fusion operator,4h,hq densen/metan PMSE,0.9980878276527928,-0.19121723472071972
+Fusion operator,4h,hl phmn/metan PMSE,0.9970029825445929,-0.2997017455407147
+Fusion operator,4h,hl densen/metan PMSE,0.9963290556143658,-0.36709443856342006

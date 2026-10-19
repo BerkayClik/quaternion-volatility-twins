@@ -1,0 +1,14 @@
+# Pooled daily Transformer (same aligned folds as pool_1d.yaml) and GARCH baselines.
+name: pool_1d_extra
+datasets: [btc_1d, bnb_1d, eth_1d, sol_1d]
+tasks: [range]
+groupsets:
+  P: [price]
+  PMSE: [price, market, social, sentiment]
+models: [garch, gjr, transformer]
+pooled_models: [transformer]
+seeds: [0, 1, 2, 3, 4]
+window: {1d: 30}
+folds: {n: 4, test_days: 90, val_days: 180, end: "2025-07-21"}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

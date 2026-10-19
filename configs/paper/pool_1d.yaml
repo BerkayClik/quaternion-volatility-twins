@@ -1,0 +1,15 @@
+# Cross-coin pooled training (daily). Folds share a calendar end (ETH/SOL end
+# 2025-07-21), so single-coin models are re-run on the same windows.
+name: pool_1d
+datasets: [btc_1d, bnb_1d, eth_1d, sol_1d]
+tasks: [range]
+groupsets:
+  P: [price]
+  PMSE: [price, market, social, sentiment]
+models: [persistence, har, ridge, lstm, qlstm, hq_concat, hq_meta]
+pooled_models: [lstm, qlstm, hq_concat, hq_meta]
+seeds: [0, 1, 2, 3, 4]
+window: {1d: 30}
+folds: {n: 4, test_days: 90, val_days: 180, end: "2025-07-21"}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

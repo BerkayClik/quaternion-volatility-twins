@@ -1,0 +1,133 @@
+freq,comparison,fold,ratio,better
+4h,"pooling (Transformer, PMSE)",0,0.9208120874072726,15.0
+4h,"pooling (Transformer, PMSE)",1,0.9128238225237381,15.0
+4h,"pooling (Transformer, PMSE)",2,0.9204551843840847,15.0
+4h,"pooling (Transformer, PMSE)",3,0.8783620822951609,15.0
+4h,"pooling (H-LSTM, PMSE)",0,0.9238655001928682,15.0
+4h,"pooling (H-LSTM, PMSE)",1,0.9001417585159355,15.0
+4h,"pooling (H-LSTM, PMSE)",2,0.9135718144725011,15.0
+4h,"pooling (H-LSTM, PMSE)",3,0.8783593681559,15.0
+4h,"hierarchy, single (LSTM)",0,0.9520524734946807,13.0
+4h,"hierarchy, single (LSTM)",1,0.9702800205139361,13.0
+4h,"hierarchy, single (LSTM)",2,0.9341482276033629,14.0
+4h,"hierarchy, single (LSTM)",3,0.9085622642834609,15.0
+4h,"hierarchy, single (Transformer)",0,0.9782104200834396,11.0
+4h,"hierarchy, single (Transformer)",1,0.9790077067431281,11.0
+4h,"hierarchy, single (Transformer)",2,0.9470412901992996,14.0
+4h,"hierarchy, single (Transformer)",3,0.92677063427489,15.0
+4h,"market data, pooled Transformer",0,0.9682880131343036,14.0
+4h,"market data, pooled Transformer",1,0.9456193615710295,14.0
+4h,"market data, pooled Transformer",2,0.9462296714159957,15.0
+4h,"market data, pooled Transformer",3,0.9542765176554346,13.0
+4h,"social data, pooled Transformer",0,0.994768195312861,11.0
+4h,"social data, pooled Transformer",1,1.0089495649386053,5.0
+4h,"social data, pooled Transformer",2,1.0376138888682267,0.0
+4h,"social data, pooled Transformer",3,1.0100202923149562,3.0
+4h,best network vs HAR,0,0.8762863697974136,15.0
+4h,best network vs HAR,1,0.8577640110815172,15.0
+4h,best network vs HAR,2,0.8693576354202488,14.0
+4h,best network vs HAR,3,0.8384879510918861,14.0
+4h,best network vs HAR-S,0,0.9659408642255655,13.0
+4h,best network vs HAR-S,1,0.9552329814958466,14.0
+4h,best network vs HAR-S,2,0.9512894376676779,14.0
+4h,best network vs HAR-S,3,0.9302199128729638,12.0
+4h,"QLSTM / LSTM, single",0,0.9849078667097516,8.0
+4h,"QLSTM / LSTM, single",1,0.9975911388919128,9.0
+4h,"QLSTM / LSTM, single",2,0.9988428197113127,7.0
+4h,"QLSTM / LSTM, single",3,0.9895157313979173,11.0
+4h,"H-QLSTM / H-LSTM, pooled",0,1.0008037882344267,6.0
+4h,"H-QLSTM / H-LSTM, pooled",1,1.0107317907800328,4.0
+4h,"H-QLSTM / H-LSTM, pooled",2,1.0032615577894826,5.0
+4h,"H-QLSTM / H-LSTM, pooled",3,1.0227352391899114,3.0
+4h,"H-QT / H-T, pooled",0,0.9946544835714675,12.0
+4h,"H-QT / H-T, pooled",1,0.998124493335479,10.0
+4h,"H-QT / H-T, pooled",2,1.0056580123758914,4.0
+4h,"H-QT / H-T, pooled",3,0.9970372103593982,10.0
+1h,"pooling (Transformer, PMSE)",0,0.9740546717589799,13.0
+1h,"pooling (Transformer, PMSE)",1,0.9402150119924043,15.0
+1h,"pooling (Transformer, PMSE)",2,0.9544394803628672,15.0
+1h,"pooling (Transformer, PMSE)",3,0.9411739958994519,15.0
+1h,"pooling (H-LSTM, PMSE)",0,0.9736904236560436,14.0
+1h,"pooling (H-LSTM, PMSE)",1,0.9666702768667698,15.0
+1h,"pooling (H-LSTM, PMSE)",2,0.9794140410680249,14.0
+1h,"pooling (H-LSTM, PMSE)",3,0.9807754719429906,13.0
+1h,"hierarchy, single (LSTM)",0,0.9796483848181414,15.0
+1h,"hierarchy, single (LSTM)",1,0.9697175022732537,15.0
+1h,"hierarchy, single (LSTM)",2,0.9437086619720719,15.0
+1h,"hierarchy, single (LSTM)",3,0.9192473236649773,15.0
+1h,"hierarchy, single (Transformer)",0,0.9761997476237315,15.0
+1h,"hierarchy, single (Transformer)",1,0.9640833828898229,15.0
+1h,"hierarchy, single (Transformer)",2,0.9619965286769524,15.0
+1h,"hierarchy, single (Transformer)",3,0.9497847249735162,15.0
+1h,"market data, pooled Transformer",0,0.9611228815461675,15.0
+1h,"market data, pooled Transformer",1,0.9561119382185358,15.0
+1h,"market data, pooled Transformer",2,0.9630229966453786,15.0
+1h,"market data, pooled Transformer",3,0.9652151029216193,14.0
+1h,"social data, pooled Transformer",0,1.007008550471321,2.0
+1h,"social data, pooled Transformer",1,1.0035919526484218,6.0
+1h,"social data, pooled Transformer",2,1.010928391729901,2.0
+1h,"social data, pooled Transformer",3,1.0020592220158056,6.0
+1h,best network vs HAR,0,0.9197923478431751,15.0
+1h,best network vs HAR,1,0.9109297537805153,15.0
+1h,best network vs HAR,2,0.9103994376160215,15.0
+1h,best network vs HAR,3,0.9186361151585455,14.0
+1h,best network vs HAR-S,0,0.9906608678520354,12.0
+1h,best network vs HAR-S,1,0.9772829713936722,14.0
+1h,best network vs HAR-S,2,0.960788139477966,14.0
+1h,best network vs HAR-S,3,0.9733909194276659,13.0
+1h,"QLSTM / LSTM, single",0,1.0068179951969978,2.0
+1h,"QLSTM / LSTM, single",1,1.0013961820812984,6.0
+1h,"QLSTM / LSTM, single",2,0.9872367067660787,14.0
+1h,"QLSTM / LSTM, single",3,0.9879502879704813,11.0
+1h,"H-QLSTM / H-LSTM, pooled",0,1.0034628459649824,2.0
+1h,"H-QLSTM / H-LSTM, pooled",1,1.0022926151905083,5.0
+1h,"H-QLSTM / H-LSTM, pooled",2,0.9982384624650306,11.0
+1h,"H-QLSTM / H-LSTM, pooled",3,1.0074055047599366,3.0
+1h,"H-QT / H-T, pooled",0,1.0061530139838526,3.0
+1h,"H-QT / H-T, pooled",1,1.0019211055083477,5.0
+1h,"H-QT / H-T, pooled",2,0.9929611113583943,13.0
+1h,"H-QT / H-T, pooled",3,0.993202467467327,12.0
+1d,"pooling (Transformer, PMSE)",0,0.902443334374295,14.0
+1d,"pooling (Transformer, PMSE)",1,0.8223771074076608,15.0
+1d,"pooling (Transformer, PMSE)",2,0.8574945602005861,15.0
+1d,"pooling (Transformer, PMSE)",3,0.8376775219043949,12.0
+1d,"pooling (H-LSTM, PMSE)",0,0.94365084054213,12.0
+1d,"pooling (H-LSTM, PMSE)",1,0.9800895567232099,7.0
+1d,"pooling (H-LSTM, PMSE)",2,0.9317808076370876,14.0
+1d,"pooling (H-LSTM, PMSE)",3,0.9033651250463078,13.0
+1d,"hierarchy, single (LSTM)",0,0.9817427113773274,9.0
+1d,"hierarchy, single (LSTM)",1,0.9362977857933956,13.0
+1d,"hierarchy, single (LSTM)",2,0.8759317414986115,14.0
+1d,"hierarchy, single (LSTM)",3,0.8989782498823533,15.0
+1d,"hierarchy, single (Transformer)",0,1.0148498889599067,9.0
+1d,"hierarchy, single (Transformer)",1,0.9393597382548932,13.0
+1d,"hierarchy, single (Transformer)",2,0.9255488665951055,13.0
+1d,"hierarchy, single (Transformer)",3,0.9454090785207929,11.0
+1d,"market data, pooled Transformer",0,0.9734810621496576,10.0
+1d,"market data, pooled Transformer",1,0.9618348244377903,11.0
+1d,"market data, pooled Transformer",2,0.9871050806182932,7.0
+1d,"market data, pooled Transformer",3,0.9234952751533387,13.0
+1d,"social data, pooled Transformer",0,1.0131966497722618,4.0
+1d,"social data, pooled Transformer",1,1.0345604053224275,2.0
+1d,"social data, pooled Transformer",2,0.9905818357544132,10.0
+1d,"social data, pooled Transformer",3,1.0561760985107864,3.0
+1d,best network vs HAR,0,0.9214076518106837,13.0
+1d,best network vs HAR,1,0.859432472448746,13.0
+1d,best network vs HAR,2,0.9492097329324409,10.0
+1d,best network vs HAR,3,0.8753150101248187,13.0
+1d,best network vs HAR-S,0,1.011443502216453,9.0
+1d,best network vs HAR-S,1,0.9950987015804243,5.0
+1d,best network vs HAR-S,2,0.9978297913944153,9.0
+1d,best network vs HAR-S,3,0.9722163785395157,11.0
+1d,"QLSTM / LSTM, single",0,0.999804619831428,8.0
+1d,"QLSTM / LSTM, single",1,1.0202949955648775,5.0
+1d,"QLSTM / LSTM, single",2,1.0343643904530984,6.0
+1d,"QLSTM / LSTM, single",3,1.0205521290152495,3.0
+1d,"H-QLSTM / H-LSTM, pooled",0,0.9902223846453211,10.0
+1d,"H-QLSTM / H-LSTM, pooled",1,0.9976860233490151,9.0
+1d,"H-QLSTM / H-LSTM, pooled",2,1.0081710761045686,3.0
+1d,"H-QLSTM / H-LSTM, pooled",3,1.010377424015584,2.0
+1d,"H-QT / H-T, pooled",0,1.009927104140574,5.0
+1d,"H-QT / H-T, pooled",1,1.0840287726989568,2.0
+1d,"H-QT / H-T, pooled",2,0.9957321107294228,8.0
+1d,"H-QT / H-T, pooled",3,0.9910367984692937,9.0

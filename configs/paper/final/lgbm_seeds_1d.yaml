@@ -1,0 +1,14 @@
+# FINAL (round 5): seeds 1-2 of the pooled LightGBM-S (PM), so with final_lgbm_1d (seed 0) it is a 3-seed average;
+# the seed sets the 0.8 row/column subsampling (random_state). Same folds, design and early stopping.
+name: final_lgbm_seeds_1d
+datasets: [btc_1d, eth_1d, sol_1d, bnb_1d, xrp_1d, ada_1d, doge_1d, link_1d, ltc_1d, dot_1d, avax_1d, trx_1d, bch_1d, xlm_1d, atom_1d]
+tasks: [range]
+groupsets:
+  PM: [price, market]
+models: []
+pooled_models: [lgbms]
+seeds: [1, 2]
+window: {1d: 30}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

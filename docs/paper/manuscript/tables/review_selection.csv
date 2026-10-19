@@ -1,0 +1,4 @@
+freq,selected,sel_val,sel_test,test_best,best_test
+4h,hl_gattn-pool PM,0.8525506243221745,0.8526282730997125,hl_gattn-pool PM,0.8526282730997125
+1h,hl_gattn-pool PMSE,0.901565850341699,0.9143500464610068,hl_gattn-pool PM,0.9139678654533469
+1d,ht_concat-pool PMSE,0.8867912581255349,0.896859257576916,ht_concat-pool PMSE,0.896859257576916

@@ -1,0 +1,13 @@
+# Budget sweep, pooled 4h: quaternion vs real hierarchical encoders (main uses 20000).
+name: pool_4h_budget_2000
+datasets: [btc_4h, bnb_4h, eth_4h, sol_4h, xrp_4h]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [hq_meta, hl_meta, hq_concat, hl_concat, qlstm, lstm]
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 90, val_days: 180}
+budget: 2000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

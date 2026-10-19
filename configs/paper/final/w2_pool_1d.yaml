@@ -1,0 +1,17 @@
+# FINAL (internal review round 7): second, untouched test window (2023-10-29 to 2025-04-21, the
+# 540 days before the main test period); coins with enough history before it; pooled networks
+# (twins, calendar inputs), HAR, HAR-S and LightGBM-S. Same protocol and settings as the main grid.
+name: final_w2_pool_1d
+datasets: [btc_1d, eth_1d, sol_1d, bnb_1d, xrp_1d, ada_1d, doge_1d, link_1d, ltc_1d, dot_1d, avax_1d, bch_1d, atom_1d]
+tasks: [range]
+groupsets:
+  PM: [price, market]
+  PMSE: [price, market, social, sentiment]
+  PMC: [price, market, calendar]
+models: [har, hars, lgbms]
+pooled_models: [lstm, qlstm, transformer, qtransformer, hl_meta, hq_meta, ht_meta, hqt_meta, hl_gattn, hq_gattn, ht_concat, hqt_concat, lgbms]
+seeds: [0, 1, 2]
+window: {1d: 30}
+folds: {n: 4, test_days: 135, val_days: 180, end: "2025-04-21"}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

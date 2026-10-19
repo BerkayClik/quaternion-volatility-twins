@@ -1,0 +1,10 @@
+\begin{tabular}{lrrrrrrr}
+\toprule
+Fusion & \multicolumn{3}{c}{MSE / HAR} & \multicolumn{2}{c}{H-LSTM+proj. / H-LSTM} & \multicolumn{2}{c}{\HQ{} / H-LSTM+proj.} \\
+ & H-LSTM & +proj. & \HQ{} & ratio & DM & ratio & DM \\
+\midrule
+Meta & 0.881 & 0.877 & 0.889 & 0.996 & -2.05 & 1.014 & 5.22$^{*}$ \\
+Group attention & 0.871 & 0.872 & 0.882 & 1.002 & 0.66 & 1.011 & 4.82$^{*}$ \\
+Meta + tanh & 0.877 & 0.875 & 0.885 & 0.998 & -0.92 & 1.012 & 4.58$^{*}$ \\
+\bottomrule
+\end{tabular}

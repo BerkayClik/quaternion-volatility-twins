@@ -1,0 +1,22 @@
+% generated from review_folds.csv (experiments/paper_review_checks.py folds)
+\begin{tabular}{lrrrrrrrr}
+\toprule
+ & \multicolumn{4}{c}{4-hourly} & \multicolumn{4}{c}{Hourly} \\
+\cmidrule(lr){2-5}\cmidrule(lr){6-9}
+Test block & 1 & 2 & 3 & 4 & 1 & 2 & 3 & 4 \\
+BTC return & +19\% & $-14$\% & $-25$\% & +14\% & +19\% & $-14$\% & $-25$\% & +14\% \\
+BTC volatility (ann.) & 31\% & 38\% & 52\% & 39\% & 31\% & 38\% & 52\% & 39\% \\
+\midrule
+Best network / HAR & 0.876 & 0.858 & 0.869 & 0.838 & 0.920 & 0.911 & 0.910 & 0.919 \\
+Best network / HAR-S & 0.966 & 0.955 & 0.951 & 0.930 & 0.991 & 0.977 & 0.961 & 0.973 \\
+Pooled / single Transformer & 0.921 & 0.913 & 0.920 & 0.878 & 0.974 & 0.940 & 0.954 & 0.941 \\
+Pooled / single H-LSTM & 0.924 & 0.900 & 0.914 & 0.878 & 0.974 & 0.967 & 0.979 & 0.981 \\
+H-LSTM / LSTM (single) & 0.952 & 0.970 & 0.934 & 0.909 & 0.980 & 0.970 & 0.944 & 0.919 \\
+H-Transformer / Transformer (single) & 0.978 & 0.979 & 0.947 & 0.927 & 0.976 & 0.964 & 0.962 & 0.950 \\
+PM / P (pooled Transformer) & 0.968 & 0.946 & 0.946 & 0.954 & 0.961 & 0.956 & 0.963 & 0.965 \\
+PMSE / PM (pooled Transformer) & 0.995 & 1.009 & 1.038 & 1.010 & 1.007 & 1.004 & 1.011 & 1.002 \\
+QLSTM / LSTM (single) & 0.985 & 0.998 & 0.999 & 0.990 & 1.007 & 1.001 & 0.987 & 0.988 \\
+H-QLSTM / H-LSTM (pooled) & 1.001 & 1.011 & 1.003 & 1.023 & 1.003 & 1.002 & 0.998 & 1.007 \\
+H-QTransformer / H-Transformer (pooled) & 0.995 & 0.998 & 1.006 & 0.997 & 1.006 & 1.002 & 0.993 & 0.993 \\
+\bottomrule
+\end{tabular}

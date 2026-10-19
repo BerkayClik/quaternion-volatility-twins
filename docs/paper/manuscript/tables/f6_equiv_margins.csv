@@ -1,0 +1,7 @@
+freq,setting,pairs,equiv_0.005,equiv_0.01,equiv_0.02
+4h,single,6,0,0,3
+4h,pooled,8,2,4,7
+1h,single,6,2,3,6
+1h,pooled,8,5,8,8
+1d,single,6,0,1,1
+1d,pooled,8,0,1,4
