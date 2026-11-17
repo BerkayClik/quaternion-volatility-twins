@@ -131,7 +131,9 @@ def main_table(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def pooled_ratio(x: pd.DataFrame, a: tuple, b: tuple) -> tuple[float, float, float]:
-    """Ratio of the coin-averaged MSE of a to that of b on the common dates, with its 90% interval."""
+    """Ratio of the coin-averaged MSE of a to that of b on the common dates, with its 90% interval. This is
+    the one estimate of a loss ratio used in the paper (tables, figures, tests and intervals): the MSE over
+    all coins and test bars of a, divided by that of b."""
     ens = seed_mean(x).assign(se=lambda v: (v.pred - v.y) ** 2)
     loss = {k: ens[(ens.groupset == k[0]) & (ens.model == k[1])].pivot(index="time", columns="dataset", values="se")
             for k in (a, b)}

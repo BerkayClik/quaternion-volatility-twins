@@ -2,18 +2,15 @@
 Checks asked for by review round 1 of paper v2 (docs/paper/review/v2_round1/), computed from saved
 forecasts only (pooled 4-hour bars, 15 coins, seeds 0-2 unless stated).
 
-    .venv/bin/python -W ignore experiments/paper_v2_checks.py [seeds|qlike|sources|returns|all]
+    .venv/bin/python -W ignore experiments/paper_v2_checks.py [seeds|sources|returns|vintages|all]
 
   seeds    tables/v2_seed_sensitivity.csv  twin ratios of single seeds (same-seed and all nine pairings)
                                             and equivalence at margins of 0.5%, 1% and 2% (REV-04, REV-15);
            tables/v2_single_seed.csv        MSE/HAR of single-seed forecasts against the three-seed
                                             average, networks and LightGBM-S (REV-16)
-  qlike    tables/v2_qlike.csv              calibrated QLIKE relative to HAR with one level constant per
-                                            coin and fold (the paper's definition) and with one constant
-                                            per coin, fold and time of day; cross-coin DM test of the
-                                            proposed model against each model on both (REV-05)
   sources  tables/v2_sources_v1.csv         16 against 8 features in the earlier pooled grid (REV-17)
   returns  tables/v2_returns.csv            next-bar log return, the negative control (REV-09)
+  vintages tables/v2_vintages.csv           two downloads of the vendor history compared field by field
 """
 
 import glob
@@ -26,7 +23,7 @@ import pandas as pd
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.dirname(__file__))
-from src.paper.evaluate import _to_time, diebold_mariano, dm_cross, dm_table, holm, load_run  # noqa: E402
+from src.paper.evaluate import dm_cross, dm_table, holm, load_run  # noqa: E402
 import paper_v2_summary as S  # noqa: E402
 import paper_v2_tables as T  # noqa: E402
 from paper_round8_checks import _ratio_se  # noqa: E402
@@ -75,7 +72,7 @@ def seeds():
     t.to_csv(OUT / "v2_seed_sensitivity.csv", index=False)
     print(t.round(4).to_string(index=False))
 
-    # single-seed forecasts against the three-seed average, relative to HAR (mean over coins of the ratio)
+    # single-seed forecasts against the three-seed average, relative to HAR (MSE over all coins and test bars)
     har = df[(df.groupset == HAR[0]) & (df.model == HAR[1])]
     rows = []
     for label, key in [("H-QLSTM (proposed)", PROPOSED), ("H-LSTM (real twin)", TWIN), ("LightGBM-S, pooled", LGBMS),
@@ -83,9 +80,8 @@ def seeds():
         g = df[(df.groupset == key[0]) & (df.model == key[1])]
         r = dict(model=label)
         for s in (0, 1, 2):
-            d = dm_table(pd.concat([har, g[g.seed == s]]), {"range": HAR})
-            r[f"seed{s}"] = d.rel_loss.mean()
-        r["average_of_seeds"] = dm_table(pd.concat([har, g]), {"range": HAR}).rel_loss.mean()
+            r[f"seed{s}"] = S.pooled_ratio(pd.concat([har, g[g.seed == s]]), key, HAR)[0]
+        r["average_of_seeds"] = S.pooled_ratio(pd.concat([har, g]), key, HAR)[0]
         rows.append(r)
     t2 = pd.DataFrame(rows)
     t2.to_csv(OUT / "v2_single_seed.csv", index=False)
@@ -96,81 +92,7 @@ def seeds():
         both = np.array([(g, m) in (PROPOSED, LGBMS) for g, m in zip(df.groupset, df.model)])
         x = df[both & (df.seed == s).to_numpy()]
         c = dm_cross(x, PROPOSED, LGBMS)
-        print(f"seed {s}: proposed / LightGBM-S = {dm_table(x, {'range': LGBMS}).rel_loss.mean():.4f}, DM {c['dm_stat']:+.2f}, p = {c['p']:.3f}")
-
-
-QLIKE_MODELS = [("HAR", HAR), ("HAR-S", ("PMSE", "hars")), ("HAR-XS", ("PMSE", "harxs")), ("LightGBM-S, pooled", LGBMS),
-                ("LSTM", ("PMSE", "lstm-pool")), ("Transformer", ("PMSE", "transformer-pool")),
-                ("H-LSTM, 2 layers", ("PMSE", "hl_meta-L2-pool")), ("H-QLSTM, 2 layers", ("PMSE", "hq_meta-L2-pool")),
-                ("LSTM + calendar", ("PMSEC", "lstm+cal-pool")), ("Transformer + calendar", ("PMSEC", "transformer+cal-pool")),
-                ("H-LSTM + calendar (real twin)", TWIN), ("H-QLSTM + calendar (proposed)", PROPOSED)]
-
-
-def _splits(keys: set) -> pd.DataFrame:
-    """Seed-averaged validation and test forecasts of the models in `keys` (as calibrated_qlike in paper_v2_tables)."""
-    files = {}
-    for pattern in T.MAIN_RUNS:
-        (directory,) = glob.glob(pattern)
-        for path in glob.glob(os.path.join(directory, "preds", "*.npz")):
-            ds, task, gs, model, seed, fold = os.path.basename(path)[:-4].split("__")
-            if task == "range" and (gs, model) in keys and int(seed[1:]) <= 2:
-                files[(ds, gs, model, seed, fold)] = path
-    parts = []
-    for (ds, gs, model, seed, fold), path in files.items():
-        z = np.load(path)
-        for split in ("test", "val"):
-            parts.append(pd.DataFrame({"dataset": ds, "groupset": gs, "model": model, "seed": int(seed[1:]),
-                                       "fold": int(fold[1:]), "split": split, "time": _to_time(z[f"{split}_time"]),
-                                       "y": z[f"{split}_y"].astype(float), "pred": z[f"{split}_pred"].astype(float)}))
-    df = pd.concat(parts, ignore_index=True)
-    return (df.groupby(["dataset", "groupset", "model", "fold", "split", "time"], as_index=False)
-              .agg(y=("y", "first"), pred=("pred", "mean")))
-
-
-def qlike():
-    """QLIKE on the variance scale needs a level: the networks forecast the log range, so exp(2 * forecast) is
-    not a mean variance. The paper rescales it with one constant per coin and fold from the validation block.
-    If the forecast error variance depends on the time of day, one constant leaves a calendar-dependent bias
-    that only the models with calendar information expose; a constant per time-of-day cell removes it."""
-    ens = _splits({k for _, k in QLIKE_MODELS})
-    ens["cell"] = ens.time.dt.hour                       # time of day of the target bar's open (six cells on 4h bars)
-    ens["s2"], ens["raw"] = np.exp(2 * ens.y), np.exp(2 * ens.pred)
-    out = {}
-    for name, by in [("one constant", ["dataset", "groupset", "model", "fold"]),
-                     ("per time of day", ["dataset", "groupset", "model", "fold", "cell"])]:
-        val = ens[ens.split == "val"].groupby(by).agg(s2=("s2", "mean"), raw=("raw", "mean"))
-        k = (val.s2 / val.raw).rename("k")
-        test = ens[ens.split == "test"].join(k, on=by)
-        test["h"] = test.k * test.raw
-        test["ql"] = test.s2 / test.h - np.log(test.s2 / test.h) - 1
-        out[name] = test
-    rows = []
-    for label, key in QLIKE_MODELS:
-        r = dict(model=label)
-        for name, test in out.items():
-            per = test.groupby(["groupset", "model", "dataset"]).ql.mean().unstack("dataset")
-            r[f"qlike_har ({name})"] = (per.loc[key] / per.loc[HAR]).mean()
-            if key != PROPOSED:
-                loss = {kk: test[(test.groupset == kk[0]) & (test.model == kk[1])].pivot(index="time", columns="dataset", values="ql")
-                        for kk in (PROPOSED, key)}
-                t = loss[PROPOSED].dropna().index.intersection(loss[key].dropna().index)
-                d = (loss[PROPOSED].loc[t] - loss[key].loc[t]).mean(axis=1)
-                stat, p = diebold_mariano(d.to_numpy(), np.zeros(len(d)))
-                r[f"proposed_vs_model_dm ({name})"], r[f"p ({name})"] = stat, p
-        rows.append(r)
-    t = pd.DataFrame(rows)
-    for name in out:
-        ok = t[f"p ({name})"].notna()
-        t.loc[ok, f"p_holm ({name})"] = holm(t.loc[ok, f"p ({name})"])
-    t.to_csv(OUT / "v2_qlike.csv", index=False)
-    pd.set_option("display.width", 260, "display.max_columns", 30)
-    print(t.round(4).to_string(index=False))
-    # the spread of the level constant across the six time-of-day cells: how calendar-dependent the level is
-    test = out["per time of day"]
-    spread = test.groupby(["groupset", "model", "dataset", "fold"]).k.agg(lambda v: v.max() / v.min())
-    print("\nmax/min of the level constant over the six time-of-day cells (median over coins and folds):")
-    for label, key in QLIKE_MODELS:
-        print(f"  {label:32s} {spread.loc[key].median():.2f}")
+        print(f"seed {s}: proposed / LightGBM-S = {S.pooled_ratio(x, PROPOSED, LGBMS)[0]:.4f}, DM {c['dm_stat']:+.2f}, p = {c['p']:.3f}")
 
 
 def sources():
@@ -186,7 +108,7 @@ def sources():
             continue
         t = dm_table(x, {"range": b})
         c = dm_cross(x, a, b)
-        rows.append(dict(model=model, ratio_16_over_8=t.rel_loss.mean(), coins_16_better=int((t.rel_loss < 1).sum()), n=len(t),
+        rows.append(dict(model=model, ratio_16_over_8=S.pooled_ratio(x, a, b)[0], coins_16_better=int((t.rel_loss < 1).sum()), n=len(t),
                          dm=c["dm_stat"], p=c["p"]))
     t = pd.DataFrame(rows)
     t["p_holm"] = holm(t.p)
@@ -203,15 +125,50 @@ def returns():
     ens["se"], ens["se0"] = (ens.pred - ens.y) ** 2, ens.y ** 2
     g = ens.groupby(["groupset", "model", "dataset"]).agg(mse=("se", "mean"), mse0=("se0", "mean"))
     g["rel"] = g.mse / g.mse0
-    t = g.groupby(["groupset", "model"]).agg(mse_over_zero=("rel", "mean"), coins_better=("rel", lambda v: int((v < 1).sum())),
+    t = g.groupby(["groupset", "model"]).agg(mse=("mse", "mean"), mse0=("mse0", "mean"), coins_better=("rel", lambda v: int((v < 1).sum())),
                                               n=("rel", "size")).reset_index()
+    t.insert(2, "mse_over_zero", t.pop("mse") / t.pop("mse0"))       # losses averaged over the coins, then the ratio
     t.to_csv(OUT / "v2_returns.csv", index=False)
     print(t.round(4).to_string(index=False))
 
 
+VENDOR_FIELDS = ["contributors_active", "contributors_created", "posts_active", "posts_created", "sentiment", "galaxy_score",
+                 "social_dominance", "interactions"]
+
+
+def vintages(first_test_bar: str = "2025-04-22"):
+    """Two downloads of the vendor history compared: hourly values of February 2026 (data/cache, five coins) against
+    those of the snapshot of the paper (data/lunarcrush, October 2026), from the first test bar to the end of the
+    earlier download. `ratio_of_means` is the later download over the earlier one."""
+    rows = []
+    for old in sorted(glob.glob("data/cache/lunarcrush_*_hour_full.csv")):
+        coin = os.path.basename(old).split("_")[1]
+        new = f"data/lunarcrush/{coin}_hour.csv"
+        if not os.path.exists(new):
+            continue
+        a = pd.read_csv(old, parse_dates=["Datetime"]).set_index("Datetime")
+        b = pd.read_csv(new, parse_dates=["Datetime"]).set_index("Datetime")
+        idx = a.index.intersection(b.index)
+        idx = idx[(idx >= pd.Timestamp(first_test_bar, tz="UTC")) & (idx <= a.index.max())]
+        for f in VENDOR_FIELDS:
+            x, y = a.loc[idx, f].astype(float), b.loc[idx, f].astype(float)
+            ok = x.notna() & y.notna()
+            x, y = x[ok], y[ok]
+            rel = (y - x).abs() / x.abs().clip(lower=1e-9)
+            rows.append(dict(coin=coin, field=f, bars=len(x), last=str(a.index.max())[:13], corr=np.corrcoef(x, y)[0, 1],
+                             identical=float((x == y).mean()), median_rel_diff=float(rel.median()),
+                             p90_rel_diff=float(rel.quantile(0.9)), ratio_of_means=float(y.mean() / x.mean())))
+    t = pd.DataFrame(rows)
+    t.to_csv(OUT / "v2_vintages.csv", index=False)
+    print(t.groupby("field").agg(corr_min=("corr", "min"), corr_max=("corr", "max"), identical_min=("identical", "min"),
+                                 identical_max=("identical", "max"), median_rel_min=("median_rel_diff", "min"),
+                                 median_rel_max=("median_rel_diff", "max"), ratio_min=("ratio_of_means", "min"),
+                                 ratio_max=("ratio_of_means", "max")).round(4).to_string())
+
+
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
-    for name, fn in [("seeds", seeds), ("qlike", qlike), ("sources", sources), ("returns", returns)]:
+    for name, fn in [("seeds", seeds), ("sources", sources), ("returns", returns), ("vintages", vintages)]:
         if which in (name, "all"):
             print(f"\n=== {name}")
             fn()

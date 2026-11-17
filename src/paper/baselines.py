@@ -14,6 +14,11 @@ Non-neural baselines, fitted on the same folds as the networks.
                on the validation block
   pooled HAR   predict_baseline_pooled: one OLS on the stacked, per-coin standardised
                HAR design of all coins (panel HAR; Bollerslev et al. 2018)
+  carr         range only: conditional autoregressive range model CARR(1,1) (Chou 2005), the GARCH
+               counterpart for range data: R_t = lambda_t * eps_t with lambda_t = omega + alpha * R_{t-1}
+               + beta * lambda_{t-1}. Its exponential quasi-likelihood equals that of a zero-mean normal
+               GARCH(1,1) for sqrt(R_t), which is how it is estimated; log lambda_{t+1|t} is filtered
+               forward with fixed parameters and mapped to the log-range scale by OLS on the train rows
   garch, gjr   range only: GARCH(1,1) / GJR-GARCH(1,1,1) with Student-t errors fitted on
                train-fold returns (Bollerslev 1986; Glosten et al. 1993); the one-step
                conditional volatility is filtered forward with fixed parameters and mapped
@@ -97,6 +102,20 @@ def _garch_log_sigma(ret: np.ndarray, train_rows: np.ndarray, asymmetric: bool) 
     return 0.5 * np.log(var)
 
 
+def _carr_log_lambda(log_range: np.ndarray, train_rows: np.ndarray) -> np.ndarray:
+    """log lambda_{t+1|t} of CARR(1,1) for every row t (known at the end of bar t). Reimplemented from the
+    description in Chou (2005): the model is fitted as a zero-mean GARCH(1,1) on the square root of the range."""
+    x = 10.0 * np.sqrt(np.exp(np.nan_to_num(log_range, nan=np.nanmean(log_range[train_rows]))))   # scaled for the optimiser
+    res = arch_model(x[train_rows], mean="Zero", vol="GARCH", p=1, q=1, dist="normal").fit(disp="off")
+    omega, alpha, beta = res.params["omega"], res.params["alpha[1]"], res.params["beta[1]"]
+    lam = np.empty(len(x))
+    s2 = np.mean(x[train_rows] ** 2)
+    for t in range(len(x)):           # s2 holds lambda_t; lam[t] stores lambda_{t+1}
+        s2 = omega + alpha * x[t] ** 2 + beta * s2
+        lam[t] = s2
+    return np.log(lam)
+
+
 def _windows(X, rows, window):
     rows = rows[rows >= window - 1]
     return rows, np.stack([X[t - window + 1: t + 1].ravel() for t in rows])
@@ -150,6 +169,14 @@ def predict_baseline(name, frame, task, fold, window, freq, X=None):
         if task != "range":
             raise ValueError("GARCH baselines are defined for the range task only")
         z = _garch_log_sigma(frame["ret"].to_numpy(float), tr, asymmetric=name == "gjr")
+        beta = _ols(z[tr, None], y[tr])
+        f = lambda rows: beta[0] + beta[1] * z[rows]
+        return {"test_rows": te, "test_pred": f(te), "val_rows": va, "val_pred": f(va)}
+
+    if name == "carr":
+        if task != "range":
+            raise ValueError("CARR is defined for the range task only")
+        z = _carr_log_lambda(frame["log_range"].to_numpy(float), tr)
         beta = _ols(z[tr, None], y[tr])
         f = lambda rows: beta[0] + beta[1] * z[rows]
         return {"test_rows": te, "test_pred": f(te), "val_rows": va, "val_pred": f(va)}

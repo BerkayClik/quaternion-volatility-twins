@@ -1,41 +1,41 @@
 panel,pair,algebra,x,mse_har
-budget,"LSTM, 1 layer",quaternion,2000.0,0.8991454357361544
-budget,"LSTM, 1 layer",quaternion,5000.0,0.9085926535032913
-budget,"LSTM, 1 layer",quaternion,20000.0,0.9256376002103247
-budget,"LSTM, 1 layer",quaternion,80000.0,0.9194085336850827
-learning rate,"LSTM, 1 layer",quaternion,0.0003,0.9485451987118606
-learning rate,"LSTM, 1 layer",quaternion,0.001,0.9256376002103247
-learning rate,"LSTM, 1 layer",quaternion,0.003,0.8866519693418451
-budget,"LSTM, 1 layer",real,2000.0,0.8999386457099595
-budget,"LSTM, 1 layer",real,5000.0,0.8962850061019124
-budget,"LSTM, 1 layer",real,20000.0,0.9067292429165844
-budget,"LSTM, 1 layer",real,80000.0,0.8987979485393208
-learning rate,"LSTM, 1 layer",real,0.0003,0.9247710543860552
-learning rate,"LSTM, 1 layer",real,0.001,0.9067292429165844
-learning rate,"LSTM, 1 layer",real,0.003,0.8877258333191704
-budget,"H-LSTM, 1 layer",quaternion,2000.0,0.8808454925680049
-budget,"H-LSTM, 1 layer",quaternion,5000.0,0.8826675286225466
-budget,"H-LSTM, 1 layer",quaternion,20000.0,0.8920470631091646
-budget,"H-LSTM, 1 layer",quaternion,80000.0,0.8899809312599752
-learning rate,"H-LSTM, 1 layer",quaternion,0.0003,0.9171254484058553
-learning rate,"H-LSTM, 1 layer",quaternion,0.001,0.8920470631091646
-learning rate,"H-LSTM, 1 layer",quaternion,0.003,0.8723080548829344
-budget,"H-LSTM, 1 layer",real,2000.0,0.8882925081469473
-budget,"H-LSTM, 1 layer",real,5000.0,0.8797580730543157
-budget,"H-LSTM, 1 layer",real,20000.0,0.8805255054270755
-budget,"H-LSTM, 1 layer",real,80000.0,0.8746713054773418
-learning rate,"H-LSTM, 1 layer",real,0.0003,0.8988689273883751
-learning rate,"H-LSTM, 1 layer",real,0.001,0.8805255054270755
-learning rate,"H-LSTM, 1 layer",real,0.003,0.8737656532924156
-budget,Proposed pair,quaternion,2000.0,0.8464926286580923
-budget,Proposed pair,quaternion,5000.0,0.8465207810724501
-budget,Proposed pair,quaternion,20000.0,0.8428742214666841
-budget,Proposed pair,quaternion,80000.0,0.8415607540986423
-learning rate,Proposed pair,quaternion,0.001,0.8428742214666841
-learning rate,Proposed pair,quaternion,0.003,0.8416987066671359
-budget,Proposed pair,real,2000.0,0.8522351039178166
-budget,Proposed pair,real,5000.0,0.8469712125534254
-budget,Proposed pair,real,20000.0,0.8406071788872751
-budget,Proposed pair,real,80000.0,0.8405708284876814
-learning rate,Proposed pair,real,0.001,0.8406071788872751
-learning rate,Proposed pair,real,0.003,0.8402172274352443
+budget,"LSTM, 1 layer",quaternion,2000.0,0.896635186442559
+budget,"LSTM, 1 layer",quaternion,5000.0,0.9064768924487245
+budget,"LSTM, 1 layer",quaternion,20000.0,0.9236092218652379
+budget,"LSTM, 1 layer",quaternion,80000.0,0.9171715205337279
+learning rate,"LSTM, 1 layer",quaternion,0.0003,0.947209990544419
+learning rate,"LSTM, 1 layer",quaternion,0.001,0.9236092218652379
+learning rate,"LSTM, 1 layer",quaternion,0.003,0.8839750173305007
+budget,"LSTM, 1 layer",real,2000.0,0.8972648383757008
+budget,"LSTM, 1 layer",real,5000.0,0.8935141599125885
+budget,"LSTM, 1 layer",real,20000.0,0.9040644377504996
+budget,"LSTM, 1 layer",real,80000.0,0.8962243575984958
+learning rate,"LSTM, 1 layer",real,0.0003,0.9227010953415806
+learning rate,"LSTM, 1 layer",real,0.001,0.9040644377504996
+learning rate,"LSTM, 1 layer",real,0.003,0.8845734798739411
+budget,"H-LSTM, 1 layer",quaternion,2000.0,0.8784553713112573
+budget,"H-LSTM, 1 layer",quaternion,5000.0,0.8799432146659886
+budget,"H-LSTM, 1 layer",quaternion,20000.0,0.8896111603570542
+budget,"H-LSTM, 1 layer",quaternion,80000.0,0.8873943214337812
+learning rate,"H-LSTM, 1 layer",quaternion,0.0003,0.9149514662097085
+learning rate,"H-LSTM, 1 layer",quaternion,0.001,0.8896111603570542
+learning rate,"H-LSTM, 1 layer",quaternion,0.003,0.8694441471564573
+budget,"H-LSTM, 1 layer",real,2000.0,0.8860516214765296
+budget,"H-LSTM, 1 layer",real,5000.0,0.8771163836540471
+budget,"H-LSTM, 1 layer",real,20000.0,0.8775658265378824
+budget,"H-LSTM, 1 layer",real,80000.0,0.871747385788872
+learning rate,"H-LSTM, 1 layer",real,0.0003,0.8959622988949101
+learning rate,"H-LSTM, 1 layer",real,0.001,0.8775658265378824
+learning rate,"H-LSTM, 1 layer",real,0.003,0.8707930432418554
+budget,Proposed pair,quaternion,2000.0,0.8445338209181978
+budget,Proposed pair,quaternion,5000.0,0.8442752857069455
+budget,Proposed pair,quaternion,20000.0,0.8405421934448171
+budget,Proposed pair,quaternion,80000.0,0.8390637855630785
+learning rate,Proposed pair,quaternion,0.001,0.8405421934448171
+learning rate,Proposed pair,quaternion,0.003,0.8392402894834364
+budget,Proposed pair,real,2000.0,0.8502744402793112
+budget,Proposed pair,real,5000.0,0.844792412691526
+budget,Proposed pair,real,20000.0,0.8379534921501466
+budget,Proposed pair,real,80000.0,0.8381266214952829
+learning rate,Proposed pair,real,0.001,0.8379534921501466
+learning rate,Proposed pair,real,0.003,0.8379127570420437

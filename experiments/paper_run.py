@@ -35,7 +35,7 @@ from src.paper.data import make_dataset, walk_forward_folds  # noqa: E402
 from src.paper.models import CALENDAR, HIERARCHICAL, build_matched, n_params, target_budget  # noqa: E402
 from src.paper.train import fit_predict, fit_predict_pooled, set_seed  # noqa: E402
 
-BASELINES = {"persistence", "mean", "har", "harx", "hars", "harxs", "lgbm", "lgbms", "ridge", "garch", "gjr"}
+BASELINES = {"persistence", "mean", "har", "harx", "hars", "harxs", "lgbm", "lgbms", "ridge", "garch", "gjr", "carr"}
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 
@@ -74,7 +74,7 @@ def cells(cfg):
             for fold in range(cfg["folds"]["n"]):
                 yield f"pool_{freq}", task, gs, model + POOL, seed, fold
     for ds, task, gs, model in product(cfg["datasets"], cfg["tasks"], cfg["groupsets"], cfg["models"]):
-        if model in ("har", "harx", "hars", "harxs", "lgbm", "lgbms", "garch", "gjr") and task != "range":
+        if model in ("har", "harx", "hars", "harxs", "lgbm", "lgbms", "garch", "gjr", "carr") and task != "range":
             continue
         if not _fits(model, cfg["groupsets"][gs]):
             continue

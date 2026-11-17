@@ -15,6 +15,7 @@ final_fc, final_local) and the v2 runs (results/v2, v2cal, v2ctl, v2g). Statisti
 experiments/paper_v2_summary.py.
 """
 
+import glob
 import os
 import sys
 from pathlib import Path
@@ -66,22 +67,39 @@ def load() -> pd.DataFrame:
     return df
 
 
-def vs_har(df: pd.DataFrame, loss: str = "se") -> pd.DataFrame:
-    d = dm_table(df, {"range": HAR}, loss=loss)
-    return d.groupby(["groupset", "model"]).agg(rel=("rel_loss", "mean"), better=("rel_loss", lambda v: int((v < 1).sum())),
-                                                 n=("rel_loss", "size"))
+_BY_KEY = {}                    # id(frame) -> {(groupset, model): rows}, so that a model is selected without a scan
+
+
+def _select(df: pd.DataFrame, *keys) -> pd.DataFrame:
+    if id(df) not in _BY_KEY:
+        _BY_KEY.clear()
+        _BY_KEY[id(df)] = {k: g for k, g in df.groupby(["groupset", "model"])}
+    return pd.concat([_BY_KEY[id(df)][k] for k in keys], ignore_index=True)
+
+
+def vs_har(df: pd.DataFrame, keys: list[tuple]) -> pd.DataFrame:
+    """MSE of the models in `keys` relative to HAR (MSE over all coins and test bars divided by that of HAR,
+    S.pooled_ratio) and the coins on which the model has the lower MSE."""
+    rows = {}
+    for key in keys:
+        if key == HAR:
+            continue
+        x = _select(df, key, HAR)
+        d = dm_table(x, {"range": HAR})
+        rows[key] = dict(rel=S.pooled_ratio(x, key, HAR)[0], better=int((d.rel_loss < 1).sum()), n=len(d))
+    return pd.DataFrame.from_dict(rows, orient="index")
 
 
 def against(df: pd.DataFrame, a: tuple, b: tuple) -> dict:
-    """Mean over coins of MSE(a) / MSE(b), coins where a is better, cross-coin DM test."""
-    x = df[[(g, m) in (a, b) for g, m in zip(df.groupset, df.model)]]
+    """MSE of a over all coins and test bars divided by that of b, coins where a is better, cross-coin DM test."""
+    x = _select(df, a, b)
     t = dm_table(x, {"range": b})
     c = dm_cross(x, a, b)
-    return dict(ratio=t.rel_loss.mean(), better=int((t.rel_loss < 1).sum()), n=len(t), dm=c["dm_stat"], p=c["p"])
+    return dict(ratio=S.pooled_ratio(x, a, b)[0], better=int((t.rel_loss < 1).sum()), n=len(t), dm=c["dm_stat"], p=c["p"])
 
 
 def ablation_table(df: pd.DataFrame) -> pd.DataFrame:
-    mse = vs_har(df)
+    mse = vs_har(df, [key for _, key in ABLATION_ROWS])
     rows = []
     for flags, key in ABLATION_ROWS:
         r = dict(zip(["pooled", "per_source", "two_layers", "calendar", "quaternion"], flags), key="/".join(key),
@@ -101,7 +119,7 @@ def ablation_table(df: pd.DataFrame) -> pd.DataFrame:
     for _, r in t.iterrows():
         cells = " & ".join(mark(r[c]) for c in ["pooled", "per_source", "two_layers", "calendar", "quaternion"])
         if pd.isna(r.get("prop_ratio")):
-            vs = ""
+            vs = "--"
         else:
             vs = f"{r.prop_ratio:.3f}" + ("$^{*}$" if r.prop_p_holm < 0.05 else "")
         lines.append(rf"{cells} & {r.mse:.3f} & {int(r.better)}/{int(r.n)} & {vs} \\")
@@ -126,7 +144,7 @@ def fusion_table(df: pd.DataFrame) -> pd.DataFrame:
     """The proposed model against the same two-layer model with every other fusion operator and with
     real encoders (review round 1: the fusion-stage algebra and the fully real model)."""
     df = pd.concat([df, S.run("results/v2g/out/v2_fusion_pool_4h_*")], ignore_index=True)
-    mse = vs_har(df)
+    mse = vs_har(df, [("PMSEC", f"{base}-L2+cal-pool") for _, q, r in FUSION_ROWS for base in (q, r) if base is not None])
     rows = []
     for label, q, r in FUSION_ROWS:
         for encoders, base in (("quaternion", q), ("real", r)):
@@ -136,7 +154,7 @@ def fusion_table(df: pd.DataFrame) -> pd.DataFrame:
             row = dict(fusion=label, encoders=encoders, model=key[1], mse=mse.loc[key, "rel"])
             if key != PROPOSED:
                 v = against(df, PROPOSED, key)
-                x = df[[(g, m) in (PROPOSED, key) for g, m in zip(df.groupset, df.model)]]
+                x = _select(df, PROPOSED, key)
                 _, lo, hi = S.pooled_ratio(x, PROPOSED, key)
                 row.update(prop_ratio=v["ratio"], prop_better=v["better"], dm=v["dm"], p=v["p"], ci_lo=lo, ci_hi=hi,
                            equivalent=bool(lo > 1 - S.MARGIN and hi < 1 + S.MARGIN))
@@ -149,10 +167,10 @@ def fusion_table(df: pd.DataFrame) -> pd.DataFrame:
     def cell(label, encoders):
         r = t[(t.fusion == label) & (t.encoders == encoders)]
         if r.empty:
-            return "& & "
+            return "-- & -- & --"
         r = r.iloc[0]
         if pd.isna(r.get("prop_ratio")):
-            return rf"\textbf{{{r.mse:.3f}}} & & "
+            return rf"\textbf{{{r.mse:.3f}}} & -- & --"
         star = "$^{*}$" if r.p_holm < 0.05 else ""
         return rf"{r.mse:.3f} & {r.prop_ratio:.3f}{star} & " + (r"\checkmark" if r.equivalent else "")
 
@@ -167,26 +185,43 @@ def fusion_table(df: pd.DataFrame) -> pd.DataFrame:
     return t
 
 
+WIDTH_RUN = "results/v2w/out/v2_sources_width_pool_4h_*"       # two sources at the per-source width of four
+
+
 def sources_table(df: pd.DataFrame) -> pd.DataFrame:
     """The two-layer hierarchical model with the calendar term and concatenation fusion on price + market,
-    with the social or the sentiment source added, and on all four sources (review round 1)."""
+    with the social or the sentiment source added, and on all four sources (review round 1). Last row: the
+    two-source model at the per-source width of the four-source model (half the budget), which separates
+    the number of sources from the width of the encoders; `four_over_row` is the four-source model against it."""
     df = pd.concat([df, S.run("results/v2g/out/v2_fusion_pool_4h_*"), S.run("results/v2g/out/v2_sources_pool_4h_*")],
                    ignore_index=True)
-    mse = vs_har(df)
-    sets = [("PMC", "price, market", 2), ("PMSC", "+ social", 3), ("PMEC", "+ sentiment", 3),
-            ("PMSEC", "+ social, sentiment", 4)]
+    sets = [("PMC", "price, market", 2, ""), ("PMSC", "+ social", 3, ""), ("PMEC", "+ sentiment", 3, ""),
+            ("PMSEC", "+ social, sentiment", 4, "")]
+    if glob.glob(WIDTH_RUN):
+        narrow = S.run(WIDTH_RUN)
+        n_cells = narrow.groupby("model").apply(lambda g: len(g[["dataset", "seed", "fold"]].drop_duplicates()), include_groups=False)
+        if (n_cells == S.N_CELLS).all():
+            df = pd.concat([df, narrow.assign(model=narrow.model + "@w")], ignore_index=True)
+            sets.append(("PMC", "price, market, narrow encoders", 2, "@w"))
+        else:
+            print("width control incomplete:", n_cells.to_dict())
+    mse = vs_har(df, [(gs, f"{base}-L2+cal-pool{tag}") for gs, _, _, tag in sets for base in ("hq_concat", "hl_concat")])
     rows = []
     for encoders, base in (("quaternion", "hq_concat"), ("real", "hl_concat")):
         model = f"{base}-L2+cal-pool"
-        ref = ("PMC", model)
-        for gs, label, n in sets:
-            key = (gs, model)
+        ref, four = ("PMC", model), ("PMSEC", model)
+        for gs, label, n, tag in sets:
+            key = (gs, model + tag)
             row = dict(encoders=encoders, sources=label, n_sources=n, mse=mse.loc[key, "rel"])
             if key != ref:
                 v = against(df, key, ref)
-                x = df[[(g, m) in (key, ref) for g, m in zip(df.groupset, df.model)]]
+                x = _select(df, key, ref)
                 _, lo, hi = S.pooled_ratio(x, key, ref)
                 row.update(ratio=v["ratio"], better=v["better"], dm=v["dm"], p=v["p"], ci_lo=lo, ci_hi=hi)
+            if tag:
+                v = against(df, four, key)
+                _, lo, hi = S.pooled_ratio(_select(df, four, key), four, key)
+                row.update(four_over_row=v["ratio"], four_better=v["better"], four_p=v["p"], four_ci_lo=lo, four_ci_hi=hi)
             rows.append(row)
     t = pd.DataFrame(rows)
     ok = t.p.notna()
@@ -196,12 +231,14 @@ def sources_table(df: pd.DataFrame) -> pd.DataFrame:
              r" & \multicolumn{3}{c}{Quaternion enc.} & \multicolumn{3}{c}{Real enc.} \\",
              r"\cmidrule(lr){2-4}\cmidrule(l){5-7}",
              r"Sources & MSE & Ratio & better & MSE & Ratio & better \\", r"\midrule"]
-    for _, label, _ in sets:
+    for _, label, _, tag in sets:
+        if tag:
+            lines.append(r"\addlinespace[2pt]")
         cells = []
         for encoders in ("quaternion", "real"):
             r = t[(t.encoders == encoders) & (t.sources == label)].iloc[0]
             if pd.isna(r.get("ratio")):
-                cells.append(f"{r.mse:.3f} & & ")
+                cells.append(f"{r.mse:.3f} & -- & --")
             else:
                 star = "$^{*}$" if r.p_holm < 0.05 else ""
                 cells.append(f"{r.mse:.3f} & {r.ratio:.3f}{star} & {int(r.better)}/15")

@@ -37,12 +37,14 @@ tables, write each configuration to the folder given here (`--out results/<folde
 | `v2i/out` | `v2/lr3e3_cal_pool_4h`, `v2/lr3e3_sources_pool_4h`, `v2/tfmatch_cal_pool_4h`, `v2/seeds_sources_pool_4h`, `v2/seeds_hcnn_pool_4h` |
 | `v2j/out` | `v2/budget_2000_cal_pool_4h`, `v2/budget_5000_cal_pool_4h`, `v2/budget_80000_cal_pool_4h` |
 | `v2k/out` | `v2/tfmatch_pool_4h` |
-| `v2local` | `v2/lgbm_seeds_4h`, `v2/lgbm_seeds_1h`, `v2/lgbm_seeds_1d`; `v2_benchx_4h` is written by `paper_v2_round2.py benchx_save` |
+| `v2s/out` | `v2/seeds_budget_2000_cal_pool_4h_twin` |
+| `v2w/out` | `v2/sources_width_pool_4h` |
+| `v2local` | `v2/lgbm_seeds_4h`, `v2/lgbm_seeds_1h`, `v2/lgbm_seeds_1d`, `v2/carr_4h`, `v2/seeds_budget_2000_cal_pool_4h`; `v2_benchx_4h` and `v2_lgbmlags16_4h` are written by `paper_v2_round2.py benchx_save` and `lgbmlag16_save` |
 | `final_fa/out` | `final/single_4h`, `final/pool_4h`, `final/single_1d`, `final/pool_1d`, `final/return_4h`, `final/ablation_pool_4h` |
 | `final_fb/out` | `final/single_1h` |
 | `final_fc/out` | `final/calendar_pool_4h` |
 | `final_local` | `final/har_season_*`, `final/harx_*`, `final/lgbm_*`, `final/lgbm_seeds_*` |
-| `final_tm/out`, `final_cr/out`, `final_dr2/out` | `final/twinmatch_pool_4h`; `final/return_pool_4h`; `final/grouproj_pool_4h` |
+| `final_tm/out`, `final_cr/out`, `final_dr2/out` | `final/twinmatch_pool_4h`; `final/return_pool_4h`; `final/grouproj_pool_4h`, `final/rangein_pool_4h` |
 | `final_fz/out`, `final_r7a/out`, `final_rc/out` | `final/budget_*_pool_4h`; `final/lr3e3_pool_4h`, `final/lr3e4_pool_4h`; `final/randgroups_pool_4h` |
 | `r8_local`, `r11_local` | HAR with week cells and the lagged LightGBM-S (`paper_round8_checks.py harsx_save lgbm_save`), HAR-XS with week cells (`paper_round11_checks.py harxsx_save`) |
 
@@ -59,14 +61,15 @@ format).
 | `v2_twins_all.csv` (all 75 twin tests, one Holm family), `fig_twins.pdf` | `python experiments/paper_v2_round2.py twins`, then `python experiments/paper_v2_figures.py twins` |
 | `v2_depth` (errors by encoder family and depth) | `python experiments/paper_v2_round2.py depth` (after `twins`) |
 | `v2_scope.csv`, `fig_scope.pdf` (parameter budget, learning rate) | `python experiments/paper_v2_round2.py scope`, then `python experiments/paper_v2_figures.py scope` |
-| `v2_depth_models.csv`, `v2_depth_twins.csv` | `python experiments/paper_v2_depth.py` |
-| `v2_seeds10.csv` (ten seeds, intervals over seeds and time) | `python experiments/paper_v2_round2.py seeds` |
+| `v2_seeds10.csv` (ten seeds at 20,000 and at 2,000 parameters, intervals over seeds and time) | `python experiments/paper_v2_round2.py seeds` |
 | `v2_ablation`, `v2_fusion`, `v2_sources` | `python experiments/paper_v2_tables.py` |
-| `v2_bench`, `v2_benchx`, `v2_equal_width`, `v2_small_checks`, `v2_qlike_bar`, `v2_exceed`, `v2_blocks`, `v2_selection`, `v2_levels`, `v2_returns_pooled` | `python experiments/paper_v2_round2.py <name>` (see the docstring; `benchx_save` fits the linear benchmark variants first) |
-| `v2_seed_sensitivity`, `v2_single_seed`, `v2_sources_v1`, `v2_returns` | `python experiments/paper_v2_checks.py all` |
+| `v2_bench`, `v2_benchx`, `v2_equal_width`, `v2_small_checks`, `v2_qlike_bar`, `v2_exceed`, `v2_blocks`, `v2_selection`, `v2_levels`, `v2_returns_pooled`, `v2_mcs` (model confidence set), `v2_lrselect` (learning rate chosen on validation data), `v2_rangein` | `python experiments/paper_v2_round2.py <name>` (see the docstring; `benchx_save` fits the linear benchmark variants first) |
+| `v2_seed_sensitivity`, `v2_single_seed`, `v2_sources_v1`, `v2_returns`, `v2_vintages` (two downloads of the vendor data) | `python experiments/paper_v2_checks.py all` |
 | `fig_data.pdf` | `python experiments/paper_v2_figures.py data` |
 
-`python experiments/paper_v2_round2.py all` runs every comparison. The naming of the models in the
+`python experiments/paper_v2_round2.py all` runs every comparison. Every loss ratio in these files is the loss
+averaged over the 15 coins and all test bars of one model divided by that of the other, the quantity of
+the tests and intervals. The naming of the models in the
 configurations: `-L<n>` sets the depth (`lstm-L2`, `hq_meta-L2`, `qcnn-L6`), `+cal` adds the calendar
 term, `cnn`/`qcnn` and `hc_<fusion>`/`hqc_<fusion>` are the temporal CNN twins, and the configuration key
 `match: {real: quaternion}` sizes a real twin to the parameter count of its quaternion twin.

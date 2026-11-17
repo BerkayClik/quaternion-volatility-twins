@@ -31,6 +31,9 @@ docs/paper/manuscript_v2/tables/; the figures are drawn from them by experiments
   exceed   v2_exceed.csv       95% range limits with a constant set on the validation block: exceedance rate,
                                mean limit and tick loss on the test blocks
   returns  v2_returns_pooled.csv  negative control with pooled training: next-bar log return
+  mcs      v2_mcs.csv          model confidence set of the models of the main table
+  lrselect v2_lrselect.csv     twin ratios with the learning rate chosen per model and fold on the validation block
+  rangein  v2_rangein.csv      first-stage control: the log range of the bar in place of the zero real part
 
 Forecasts: the v2 runs (results/v2*), and the benchmarks and one-layer controls of the first stage of the
 study restored from the Drive archive (results/final_*, r8_local, r11_local).
@@ -81,7 +84,9 @@ def parts_4h() -> list[pd.DataFrame]:
             _tag(S.run("results/final_r7a/out/final_lr3e4_pool_4h_*"), "@lr3e-4"),
             S.run("results/final_dr2/out/final_grouproj_pool_4h_*"),
             S.run("results/final_rc/out/final_randgroups_pool_4h_*")] + (
-        [S.run(BENCHX_DIR)] if os.path.isdir(BENCHX_DIR) else []) + [
+        [S.run(BENCHX_DIR)] if os.path.isdir(BENCHX_DIR) else []) + (
+        [S.run(LGBM_LAG16_DIR)] if os.path.isdir(LGBM_LAG16_DIR) else []) + (
+        [S.run("results/v2local/v2_carr_4h_*")] if glob.glob("results/v2local/v2_carr_4h_*") else []) + [
         _tag(_complete(S.run(pattern)), tag) for pattern, tag in ROUND2_RUNS if glob.glob(pattern)]
 
 
@@ -130,22 +135,25 @@ class Store:
         return all(k in self.by for k in keys)
 
     def vs_har(self, key: tuple) -> float:
-        return 1.0 if key == HAR else dm_table(self.get(key, HAR), {"range": HAR}).rel_loss.mean()
+        """MSE over all coins and test bars relative to that of HAR."""
+        return 1.0 if key == HAR else S.pooled_ratio(self.get(key, HAR), key, HAR)[0]
 
     def pair(self, a: tuple, b: tuple, margin: float = S.MARGIN) -> dict:
-        """a against b: mean over coins of the MSE ratio, coins where a is better, cross-coin DM test,
-        ratio of the coin-averaged losses with its 90% interval, equivalence at `margin`."""
+        """a against b: ratio of the MSE over all coins and test bars (`ratio`, also kept as `pooled`) with its
+        90% interval, coins where a is better, cross-coin DM test, equivalence at `margin`. `coin_mean` is the
+        mean over coins of the per-coin ratios, for reference only."""
         x = self.get(a, b)
         t = dm_table(x, {"range": b})
         c = dm_cross(x, a, b)
         r, lo, hi = S.pooled_ratio(x, a, b)
-        return dict(ratio=t.rel_loss.mean(), better=int((t.rel_loss < 1).sum()), n=len(t), dm=c["dm_stat"], p=c["p"],
-                    pooled=r, ci_lo=lo, ci_hi=hi, equivalent=bool(lo > 1 - margin and hi < 1 + margin))
+        return dict(ratio=r, better=int((t.rel_loss < 1).sum()), n=len(t), dm=c["dm_stat"], p=c["p"],
+                    pooled=r, ci_lo=lo, ci_hi=hi, equivalent=bool(lo > 1 - margin and hi < 1 + margin),
+                    coin_mean=t.rel_loss.mean())
 
     def by_block(self, a: tuple, b: tuple) -> list[float]:
-        """Mean over coins of MSE(a) / MSE(b) within each test block."""
+        """MSE(a) / MSE(b) over all coins within each test block."""
         x = self.get(a, b)
-        return [dm_table(x[x.fold == k], {"range": b}).rel_loss.mean() for k in sorted(x.fold.unique())]
+        return [S.pooled_ratio(x[x.fold == k], a, b)[0] for k in sorted(x.fold.unique())]
 
 
 # ============================================================================================ bench
@@ -187,6 +195,8 @@ def benchx_save():
       PM / harxs, PM / harxs_x      HAR-XS with the eight exchange features only (additive dummies, week cells)
       P / har_l, P / hars_xl, PMSE / harxs_xl   HAR, HAR-S and HAR-XS with week cells plus a 180-bar average
       P / hars_xv, PMSE / harxs_xv  the week-cell models estimated on the training and the validation block
+      PM / harxs_xlag               HAR-XS with week cells on the eight exchange features and their averages over
+                                    the two longer HAR horizons (the regressors of the lagged LightGBM-S)
     """
     import json
     from paper_round7_checks import _frames, _interactions
@@ -204,10 +214,12 @@ def benchx_save():
         week = _interactions(d.frame.index, d.step)
         add = _calendar(d.frame.index, pd.Timedelta(BAR["4h"]))
         pm, pmse = d.X(["price", "market"]).astype(float), d.X(["price", "market", "social", "sentiment"]).astype(float)
+        pm_lags = np.column_stack([pd.DataFrame(pm).rolling(k).mean().to_numpy() for k in HAR_LAGS["4h"][1:]])
         designs = {("PM", "harxs", "train"): [H, pm, add], ("PM", "harxs_x", "train"): [H, pm, week],
                    ("P", "har_l", "train"): [H, long], ("P", "hars_xl", "train"): [H, long, week],
                    ("PMSE", "harxs_xl", "train"): [H, long, pmse, week],
-                   ("P", "hars_xv", "both"): [H, week], ("PMSE", "harxs_xv", "both"): [H, pmse, week]}
+                   ("P", "hars_xv", "both"): [H, week], ("PMSE", "harxs_xv", "both"): [H, pmse, week],
+                   ("PM", "harxs_xlag", "train"): [H, pm, pm_lags, week]}
         idx = d.frame.index if d.frame.index.tz is None else d.frame.index.tz_convert(None)
         t = idx.as_unit("ns").asi8
         for (gs, name, fit), cols in designs.items():
@@ -231,17 +243,81 @@ BENCHX_ROWS = [("HAR", HAR), ("HAR + 30-day average", ("P", "har_l")),
                ("HAR-XS, week cells", ("PMSE", "harxs_x")), ("HAR-XS, week cells, exchange features", ("PM", "harxs_x")),
                ("HAR-XS, week cells + 30-day average", ("PMSE", "harxs_xl")),
                ("HAR-XS, week cells, fitted on training and validation blocks", ("PMSE", "harxs_xv")),
-               ("HAR-S, panel", ("PMSE", "hars-pool")), ("HAR-XS, panel", ("PMSE", "harxs-pool"))]
+               ("HAR-XS, week cells, lagged exchange features", ("PM", "harxs_xlag")),
+               ("HAR-S, panel", ("PMSE", "hars-pool")), ("HAR-XS, panel", ("PMSE", "harxs-pool")),
+               ("CARR(1,1)", ("P", "carr")), ("LightGBM-S, pooled, lagged, all 16 features", ("PMSE", "lgbmsl-pool"))]
 
 
 def benchx(st: Store) -> pd.DataFrame:
     rows = []
     for label, key in BENCHX_ROWS:
+        if not st.has(key):
+            print("not available:", label)
+            continue
         v = st.pair(PROPOSED, key)
         rows.append(dict(model=label, mse_har=st.vs_har(key), prop_ratio=v["ratio"], prop_better=v["better"], prop_dm=v["dm"],
                          prop_p=v["p"], ci_lo=v["ci_lo"], ci_hi=v["ci_hi"]))
     t = pd.DataFrame(rows)
     t.to_csv(OUT / "v2_benchx.csv", index=False)
+    return t
+
+
+LGBM_LAG16_DIR = "results/v2local/v2_lgbmlags16_4h"
+
+
+def lgbmlag16_save(seeds=(0, 1, 2)):
+    """The lagged pooled LightGBM-S with all 16 features (the benchmark of paper_round8_checks.lgbm_save, which
+    uses the eight exchange features): current values and averages over the two longer HAR horizons. Saved as
+    PMSE / lgbmsl-pool in the runner format."""
+    import json
+    import lightgbm  # noqa: F401  (its OpenMP runtime first, as in the runner)
+    from paper_round7_checks import _frames
+    from src.paper.baselines import HAR_LAGS, predict_baseline_pooled
+    out = os.path.join(LGBM_LAG16_DIR, "preds")
+    os.makedirs(out, exist_ok=True)
+    json.dump({"config": {"name": "v2_lgbmlags16_4h", "note": "paper_v2_round2.lgbmlag16_save"}},
+              open(os.path.join(LGBM_LAG16_DIR, "config.json"), "w"), indent=1)
+    fr, win = _frames("4h")
+    dss = list(fr)
+    Xs = [fr[ds][0].X(["price", "market", "social", "sentiment"]) for ds in dss]
+    Xl = [np.column_stack([X] + [pd.DataFrame(X).rolling(k).mean().to_numpy() for k in HAR_LAGS["4h"][1:]]) for X in Xs]
+    for seed in seeds:
+        for k in range(len(fr[dss[0]][1])):
+            res = predict_baseline_pooled("lgbms", [fr[ds][0].frame for ds in dss], "range", [fr[ds][1][k] for ds in dss],
+                                          win, "4h", Xl, seed=seed)
+            for ds, r in zip(dss, res):
+                frame = fr[ds][0].frame
+                idx = frame.index if frame.index.tz is None else frame.index.tz_convert(None)
+                t = idx.as_unit("ns").asi8
+                y = frame["y_range"].to_numpy(float)
+                np.savez(os.path.join(out, f"{ds}__range__PMSE__lgbmsl-pool__s{seed}__f{k}.npz"),
+                         test_time=t[r["test_rows"]], test_y=y[r["test_rows"]].astype("float32"),
+                         test_pred=r["test_pred"].astype("float32"), val_time=t[r["val_rows"]],
+                         val_y=y[r["val_rows"]].astype("float32"), val_pred=r["val_pred"].astype("float32"),
+                         meta=np.array(json.dumps(dict(freq="4h", seed=seed, fold=k, model="lgbmsl-pool"))))
+            print("seed", seed, "fold", k, flush=True)
+
+
+# ============================================================================================ mcs
+def mcs(st: Store, size: float = 0.10) -> pd.DataFrame:
+    """Model confidence set (Hansen, Lunde and Nason 2011) of the models of the main table: loss = squared
+    error averaged over the coins on each test bar; block bootstrap with blocks of n^(1/3) bars, 2,000
+    replications; a model is in the set at level 1 - size if its MCS p-value is at least `size`."""
+    from arch.bootstrap import MCS
+    keys = [k for _, _, k in MAIN_ROWS if k is not None] + [("P", "carr")]
+    keys = [k for k in dict.fromkeys(keys) if st.has(k)]
+    cols = {}
+    for k in keys:
+        e = st.by[k].groupby(["dataset", "time"], as_index=False).agg(y=("y", "first"), pred=("pred", "mean"))
+        e["se"] = (e.pred - e.y) ** 2
+        cols[k] = e.pivot(index="time", columns="dataset", values="se").dropna().mean(axis=1)
+    L = pd.DataFrame(cols).dropna()
+    m = MCS(L.to_numpy(), size=size, reps=2000, block_size=max(2, int(len(L) ** (1 / 3))), seed=0)
+    m.compute()
+    pv = m.pvalues.squeeze()
+    t = pd.DataFrame([dict(groupset=k[0], model=k[1], mse=L[k].mean(), mcs_p=float(pv.loc[i]), in_set=bool(pv.loc[i] >= size))
+                      for i, k in enumerate(L.columns)]).sort_values("mse")
+    t.to_csv(OUT / "v2_mcs.csv", index=False)
     return t
 
 
@@ -346,11 +422,14 @@ def _cube(df: pd.DataFrame, key: tuple) -> tuple[np.ndarray, np.ndarray, pd.Date
     return P, y.to_numpy().T, wide.index
 
 
-def _all_seeds(patterns: list[str], keys: list[tuple]) -> pd.DataFrame:
+def _all_seeds(patterns: list, keys: list[tuple]) -> pd.DataFrame:
+    """Forecasts of `keys` from the runs in `patterns`. An entry (pattern, tag) marks the models of that run
+    with the tag (a run at another budget uses the model names of the main run)."""
     parts = []
-    for pattern in patterns:
+    for entry in patterns:
+        pattern, tag = (entry, "") if isinstance(entry, str) else entry
         for d in glob.glob(pattern):
-            x = load_run(d)
+            x = _tag(load_run(d), tag)
             parts.append(x[(x.task == "range").to_numpy() & np.array([(g, m) in keys for g, m in zip(x.groupset, x.model)])])
     df = pd.concat(parts, ignore_index=True)
     assert not df.duplicated(["dataset", "groupset", "model", "seed", "fold", "time"]).any()
@@ -381,9 +460,22 @@ def seed_time(Pa: np.ndarray, Pb: np.ndarray, Y: np.ndarray, k: int, draws: int 
                 joint_lo=q(joint, 0.05), joint_hi=q(joint, 0.95), sd_joint=float(joint.std(ddof=1)))
 
 
+RUNS_20K = ["results/v2cal/out/v2_cal_pool_4h_*", "results/v2h/out/v2_seeds_pool_4h_*"]
+# the proposed pair at 2,000 parameters: seeds 0-2 on a GPU; seeds 3-9 of the quaternion model on a CPU and of
+# the real twin on a GPU (configs/paper/v2/seeds_budget_2000_cal_pool_4h.yaml and ..._twin.yaml)
+RUNS_2K = [("results/v2j/out/v2_budget_2000_cal_pool_4h_*", "@2k"), ("results/v2local/v2_seeds_budget_2000_cal_pool_4h_*", "@2k"),
+           ("results/v2s/out/v2_seeds_budget_2000_cal_pool_4h_twin_*", "@2k")]
+PROPOSED_2K, TWIN_2K = (PROPOSED[0], PROPOSED[1] + "@2k"), (TWIN[0], TWIN[1] + "@2k")
+RUNS_LGBM = ["results/final_local/final_lgbm_4h_*", "results/v2local/v2_lgbm_seeds_4h_*", "results/r8_local/final_lgbmlags_4h_r8"]
+
 SEED_PAIRS = [   # (label, quaternion or first key, real or second key, run patterns)
-    ("H-QLSTM / H-LSTM, 2 layers, calendar (proposed pair)", PROPOSED, TWIN,
-     ["results/v2cal/out/v2_cal_pool_4h_*", "results/v2h/out/v2_seeds_pool_4h_*"]),
+    ("H-QLSTM / H-LSTM, 2 layers, calendar (proposed pair)", PROPOSED, TWIN, RUNS_20K),
+    ("Proposed pair at 2,000 parameters", PROPOSED_2K, TWIN_2K, RUNS_2K),
+    ("H-QLSTM, 2,000 / 20,000 parameters", PROPOSED_2K, PROPOSED, RUNS_2K + RUNS_20K),
+    ("H-LSTM, 2,000 / 20,000 parameters", TWIN_2K, TWIN, RUNS_2K + RUNS_20K),
+    ("H-QLSTM at 2,000 / H-LSTM at 20,000 parameters", PROPOSED_2K, TWIN, RUNS_2K + RUNS_20K),
+    ("Proposed, all seeds / LightGBM-S", PROPOSED, ("PMSE", "lgbms-pool"), RUNS_20K + RUNS_LGBM),
+    ("Proposed, all seeds / LightGBM-S, lagged", PROPOSED, ("PM", "lgbmsl-pool"), RUNS_20K + RUNS_LGBM),
     ("Proposed / H-LSTM on price and market", PROPOSED, ("PMC", "hl_concat-L2+cal-pool"),
      ["results/v2cal/out/v2_cal_pool_4h_*", "results/v2h/out/v2_seeds_pool_4h_*", "results/v2g/out/v2_sources_pool_4h_*",
       "results/v2i/out/v2_seeds_sources_pool_4h_*"]),
@@ -403,10 +495,10 @@ def seeds() -> pd.DataFrame:
     har = har[(har.model == "har") & (har.groupset == "P")]
     rows = []
     for label, a, b, patterns in SEED_PAIRS:
-        if not all(glob.glob(pt) for pt in patterns):
+        if not all(glob.glob(pt if isinstance(pt, str) else pt[0]) for pt in patterns):
             print(f"[{label}] runs missing, skipped")
             continue
-        df = _all_seeds(patterns, [a, b])
+        df = _all_seeds(patterns, [a, b]).drop_duplicates(["dataset", "groupset", "model", "seed", "fold", "time"], keep="last")
         n = df.groupby(["groupset", "model", "seed"]).apply(lambda g: len(g[["dataset", "fold"]].drop_duplicates()), include_groups=False)
         full = n[n == 60].reset_index()                       # 15 coins x 4 folds
         df = df.merge(full[["groupset", "model", "seed"]], on=["groupset", "model", "seed"])
@@ -418,8 +510,8 @@ def seeds() -> pd.DataFrame:
         r = dict(pair=label, seeds_a=Pa.shape[0], seeds_b=Pb.shape[0], mse_har_a=st.vs_har(a), mse_har_b=st.vs_har(b),
                  ratio_all=full_pair["ratio"], better=full_pair["better"], dm=full_pair["dm"], p=full_pair["p"],
                  ci_lo=full_pair["ci_lo"], ci_hi=full_pair["ci_hi"])
-        har_mse = ((_har_cube(har, ta, df) - Y) ** 2).mean(1)                    # per coin
-        single = lambda P: [float((((P[i] - Y) ** 2).mean(1) / har_mse).mean()) for i in range(P.shape[0])]
+        har_mse = ((_har_cube(har, ta, df) - Y) ** 2).mean()                     # over all coins and bars
+        single = lambda P: [float(((P[i] - Y) ** 2).mean() / har_mse) for i in range(P.shape[0])]
         sa, sb = single(Pa), single(Pb)
         r.update(single_a_min=min(sa), single_a_max=max(sa), single_b_min=min(sb), single_b_max=max(sb))
         for k in (1, 3, 5):
@@ -459,6 +551,22 @@ def small(st: Store) -> pd.DataFrame:
     add("H-LSTM first design / LightGBM-S, lagged exchange features", ("PMC", "hl_gattn-pool"), ("PM", "lgbmsl-pool"))
     add("H-LSTM on price and market / LightGBM-S, lagged exchange features", ("PMC", "hl_concat-L2+cal-pool"), ("PM", "lgbmsl-pool"))
     add("QTransformer + calendar / proposed", ("PMSEC", "qtransformer+cal-pool"), PROPOSED)
+    # the proposed pair across sizes (three seeds): equal width, and each model against a larger one
+    q, r = "hq_meta-L2+cal-pool", "hl_meta-L2+cal-pool"
+    for label, a, b in [("H-QLSTM at 2,000 / H-LSTM at 5,000 (equal width), calendar", q + "@2k", r + "@5k"),
+                        ("H-QLSTM at 2,000 / H-LSTM at 20,000, calendar", q + "@2k", r),
+                        ("H-QLSTM at 2,000 / H-QLSTM at 20,000, calendar", q + "@2k", q),
+                        ("H-LSTM at 2,000 / H-LSTM at 20,000, calendar", r + "@2k", r),
+                        ("H-QLSTM at 5,000 / H-QLSTM at 20,000, calendar", q + "@5k", q),
+                        ("H-LSTM at 5,000 / H-LSTM at 20,000, calendar", r + "@5k", r),
+                        ("H-QLSTM at 20,000 / H-QLSTM at 80,000, calendar", q, q + "@80k"),
+                        ("H-QLSTM at 20,000 / H-LSTM at 80,000 (equal width), calendar", q, r + "@80k"),
+                        ("H-LSTM at 20,000 / H-LSTM at 80,000, calendar", r, r + "@80k")]:
+        if st.has(("PMSEC", a), ("PMSEC", b)):
+            add(label, ("PMSEC", a), ("PMSEC", b))
+    for m, label in (("lstm-L3", "LSTM, 3 layers"), ("qlstm-L3", "QLSTM, 3 layers"), ("cnn-L6", "CNN, 6 conv."),
+                     ("qcnn-L6", "QCNN, 6 conv."), ("hc_meta", "H-CNN, 4 conv."), ("hqc_meta", "H-QCNN, 4 conv.")):
+        add(f"20,000 / 80,000 parameters, {label}", ("PMSE", f"{m}-pool"), ("PMSE", f"{m}-pool@80k"))
     t = pd.DataFrame(rows)
     # single networks against single LightGBM-S fits, seed by seed
     for sd in (0, 1, 2):
@@ -480,8 +588,9 @@ def returns_pooled() -> pd.DataFrame:
     ens["se"], ens["se0"] = (ens.pred - ens.y) ** 2, ens.y ** 2
     g = ens.groupby(["groupset", "model", "dataset"]).agg(mse=("se", "mean"), mse0=("se0", "mean"))
     g["rel"] = g.mse / g.mse0
-    t = g.groupby(["groupset", "model"]).agg(mse_over_zero=("rel", "mean"), coins_better=("rel", lambda v: int((v < 1).sum())),
+    t = g.groupby(["groupset", "model"]).agg(mse=("mse", "mean"), mse0=("mse0", "mean"), coins_better=("rel", lambda v: int((v < 1).sum())),
                                               n=("rel", "size")).reset_index()
+    t.insert(2, "mse_over_zero", t.pop("mse") / t.pop("mse0"))       # losses averaged over the coins, then the ratio
     t.to_csv(OUT / "v2_returns_pooled.csv", index=False)
     return t
 
@@ -519,6 +628,18 @@ BLOCK_ROWS = [("HAR-S", ("PMSE", "hars")), ("HAR-S, week cells", ("P", "hars_x")
               ("H-QLSTM (proposed)", PROPOSED)]
 
 
+def _rows_ratio(x: pd.DataFrame, key: tuple, ref: tuple, keep=None) -> float:
+    """MSE of `key` divided by that of `ref` over the coin-bars selected by `keep` (seed-averaged forecasts)."""
+    e = x.groupby(["dataset", "groupset", "model", "time"], as_index=False).agg(y=("y", "first"), pred=("pred", "mean"))
+    w = e.pivot_table(index=["dataset", "time"], columns=["groupset", "model"], values="pred")
+    w.columns = [tuple(c) for c in w.columns]
+    w["y"] = e.groupby(["dataset", "time"]).y.first()
+    w = w.dropna()
+    if keep is not None:
+        w = w[keep(w)]
+    return float(((w[key] - w.y) ** 2).mean() / ((w[ref] - w.y) ** 2).mean())
+
+
 def blocks(st: Store) -> pd.DataFrame:
     """MSE relative to HAR by test block, and on the bars in the top decile of the realised range of each
     coin against the other bars."""
@@ -527,10 +648,10 @@ def blocks(st: Store) -> pd.DataFrame:
         x = st.get(key, HAR)
         r = dict(model=label)
         for k in sorted(x.fold.unique()):
-            r[f"block{k + 1}"] = dm_table(x[x.fold == k], {"range": HAR}).rel_loss.mean()
-        cut = x.groupby("dataset").y.transform(lambda v: v.quantile(0.9))
-        r["top_decile"] = dm_table(x[x.y >= cut], {"range": HAR}).rel_loss.mean()
-        r["other_bars"] = dm_table(x[x.y < cut], {"range": HAR}).rel_loss.mean()
+            r[f"block{k + 1}"] = _rows_ratio(x[x.fold == k], key, HAR)
+        top = lambda w: w.y >= w.groupby(level="dataset").y.transform(lambda v: v.quantile(0.9))
+        r["top_decile"] = _rows_ratio(x, key, HAR, top)
+        r["other_bars"] = _rows_ratio(x, key, HAR, lambda w: ~top(w))
         rows.append(r)
     t = pd.DataFrame(rows)
     t.to_csv(OUT / "v2_blocks.csv", index=False)
@@ -540,7 +661,7 @@ def blocks(st: Store) -> pd.DataFrame:
 # ============================================================================================ qlike
 def _splits(keys: list[tuple], patterns: list[str]) -> pd.DataFrame:
     """Seed-averaged validation and test forecasts of `keys` (seeds 0-2). A later pattern overrides an
-    earlier one for the same cell, as in paper_v2_tables.calibrated_qlike."""
+    earlier one for the same cell."""
     files = {}
     for pattern in patterns:
         for directory in glob.glob(pattern):
@@ -574,20 +695,39 @@ QLIKE_ROWS = [("HAR", HAR), ("HAR-S", ("PMSE", "hars")), ("HAR-XS", ("PMSE", "ha
               ("H-LSTM + calendar (real twin)", TWIN), ("H-QLSTM + calendar (proposed)", PROPOSED)]
 QLIKE_RUNS = T.MAIN_RUNS + ["results/v2g/out/v2_sources_pool_4h_*", "results/r8_local/final_harsx_4h_r8",
                             "results/r11_local/final_harxsx_4h_r11", "results/r8_local/final_lgbmlags_4h_r8",
-                            "results/final_fc/out/final_calendar_pool_4h_*"]
+                            "results/final_fc/out/final_calendar_pool_4h_*", "results/v2local/v2_carr_4h_*"]
 
 
-def _calibrated(ens: pd.DataFrame, drop: pd.Timestamp | None, rule: str = "robust") -> pd.DataFrame:
+def train_caps(freq: str = "4h") -> pd.Series:
+    """Largest realised squared range in the training block of every coin and fold. Used as a cap on the
+    realised squared range in QLIKE: a rule that needs no information from the validation or test blocks."""
+    from paper_round7_checks import _frames
+    fr, _ = _frames(freq)
+    rows = []
+    for ds, (d, folds) in fr.items():
+        y = d.frame["y_range"].to_numpy(float)
+        for k, fo in enumerate(folds):
+            rows.append(dict(dataset=ds, fold=k, cap=float(np.exp(2 * np.nanmax(y[fo["train"]])))))
+    return pd.DataFrame(rows).set_index(["dataset", "fold"]).cap
+
+
+def _calibrated(ens: pd.DataFrame, drop: pd.Timestamp | None, rule: str = "robust", caps: pd.Series | None = None) -> pd.DataFrame:
     """Test-block QLIKE of the variance forecast k * exp(2 * forecast). The level constant k comes from the
     validation block of the coin and fold:
       "means"   ratio of the mean squared range to the mean raw forecast (the rule of the first draft); one
                 extreme range or one extreme forecast in the block moves it without bound;
       "robust"  mean of the ratio squared range / raw forecast, the constant that minimises QLIKE on the block,
                 with the ratio winsorised at its 99th percentile, so that no single bar can move it.
-    With `drop`, the forecast made at that time is left out of the test loss (and of the block for "means")."""
+    With `drop`, the forecast made at that time is left out of the test loss (and of the block for "means").
+    With `caps` (train_caps), the realised squared range is capped at the largest value of the coin's training
+    block of that fold, in the validation block and in the test loss."""
     if drop is not None:
         ens = ens[ens.time != drop]
     ens = ens.assign(s2=np.exp(2 * ens.y), raw=np.exp(2 * ens.pred))
+    if caps is not None:
+        ens = ens.join(caps, on=["dataset", "fold"])
+        ens["capped"] = ens.s2 > ens.cap
+        ens["s2"] = np.minimum(ens.s2, ens.cap)
     by = ["dataset", "groupset", "model", "fold"]
     val = ens[ens.split == "val"]
     if rule == "means":
@@ -605,19 +745,25 @@ def _calibrated(ens: pd.DataFrame, drop: pd.Timestamp | None, rule: str = "robus
 
 def qlike() -> pd.DataFrame:
     ens = _splits([k for _, k in QLIKE_ROWS], QLIKE_RUNS)
-    out = {"first draft": _calibrated(ens, None, "means"), "all bars": _calibrated(ens, None), "without the bar": _calibrated(ens, CRASH_BAR)}
+    out = {"first draft": _calibrated(ens, None, "means"), "all bars": _calibrated(ens, None),
+           "without the bar": _calibrated(ens, CRASH_BAR), "capped": _calibrated(ens, None, caps=train_caps())}
+    c = out["capped"]
+    c = c[(c.groupset == PROPOSED[0]) & (c.model == PROPOSED[1])]
+    print(f"capped rule: {int(c.capped.sum())} of {len(c)} test coin-bars are capped, on {c[c.capped].time.nunique()} bars; "
+          f"share of the summed QLIKE of the proposed model in the forecast of {CRASH_BAR:%d %b %Y %H:%M}: "
+          f"{c[c.time == CRASH_BAR].ql.sum() / c.ql.sum():.3f}; in the ten largest terms: {c.ql.nlargest(10).sum() / c.ql.sum():.3f}")
     rows = []
     for label, key in QLIKE_ROWS:
         r = dict(model=label)
         for name, test in out.items():
             per = test.groupby(["groupset", "model", "dataset"]).ql.mean().unstack("dataset")
-            r[f"qlike_har ({name})"] = (per.loc[key] / per.loc[HAR]).mean()
+            r[f"qlike_har ({name})"] = per.loc[key].mean() / per.loc[HAR].mean()
             r[f"coins_better ({name})"] = int((per.loc[key] < per.loc[HAR]).sum())
             if key != PROPOSED:
                 loss = {kk: test[(test.groupset == kk[0]) & (test.model == kk[1])].pivot(index="time", columns="dataset", values="ql")
                         for kk in (PROPOSED, key)}
                 t = loss[PROPOSED].dropna().index.intersection(loss[key].dropna().index)
-                ratio = (per.loc[PROPOSED] / per.loc[key]).mean()
+                ratio = per.loc[PROPOSED].mean() / per.loc[key].mean()
                 d = (loss[PROPOSED].loc[t] - loss[key].loc[t]).mean(axis=1)
                 stat, p = diebold_mariano(d.to_numpy(), np.zeros(len(d)))
                 r[f"prop_ratio ({name})"], r[f"prop_better ({name})"] = ratio, int((per.loc[PROPOSED] < per.loc[key]).sum())
@@ -659,7 +805,7 @@ def select() -> pd.DataFrame:
     v = ens[(ens.split == "val") & (ens.fold == 0)].assign(se=lambda d: (d.pred - d.y) ** 2)
     print(f"validation block of the first fold: {v.time.min():%Y-%m-%d} to {v.time.max():%Y-%m-%d}")
     per = v.groupby(["groupset", "model", "dataset"]).se.mean().unstack("dataset")
-    t = pd.DataFrame([dict(model=label, val_mse_har=(per.loc[key] / per.loc[HAR]).mean(),
+    t = pd.DataFrame([dict(model=label, val_mse_har=per.loc[key].mean() / per.loc[HAR].mean(),
                            coins_better=int((per.loc[key] < per.loc[HAR]).sum())) for label, key in keys])
     t.to_csv(OUT / "v2_selection.csv", index=False)
     return t
@@ -711,19 +857,90 @@ def exceed(rate: float = 0.05) -> pd.DataFrame:
     rows = []
     for label, key in EXCEED_ROWS:
         a, h = g.loc[key], g.loc[HAR]
+        # the limit is in units of the range, whose level differs between coins: mean of the per-coin ratios
         r = dict(model=label, exceedance=a.rate.mean(), limit_over_har=(a.limit / h.limit).mean(),
-                 coins_lower_limit=int((a.limit < h.limit).sum()), tick_over_har=(a.tick / h.tick).mean(),
+                 coins_lower_limit=int((a.limit < h.limit).sum()), tick_over_har=a.tick.mean() / h.tick.mean(),
                  coins_lower_tick=int((a.tick < h.tick).sum()))
         if key != PROPOSED:
             t = wide[PROPOSED].dropna().index.intersection(wide[key].dropna().index)
             d = (wide[PROPOSED].loc[t] - wide[key].loc[t]).mean(axis=1)
-            r["prop_tick_ratio"] = (g.loc[PROPOSED].tick / a.tick).mean()
+            r["prop_tick_ratio"] = g.loc[PROPOSED].tick.mean() / a.tick.mean()
             r["prop_dm"], r["prop_p"] = diebold_mariano(d.to_numpy(), np.zeros(len(d)))
         rows.append(r)
     t = pd.DataFrame(rows)
     ok = t.prop_p.notna()
     t.loc[ok, "prop_p_holm"] = holm(t.loc[ok, "prop_p"])
     t.to_csv(OUT / "v2_exceed.csv", index=False)
+    return t
+
+
+# ============================================================================================ lrselect
+LR_RUNS = {   # learning rate -> runs that hold the pair at that rate (a later run overrides an earlier one)
+    "one-layer": {3e-4: ["results/final_r7a/out/final_lr3e4_pool_4h_*"],
+                  1e-3: ["results/final_fa/out/final_pool_4h_*", "results/v2/out/v2_depth_pool_4h_*"],
+                  3e-3: ["results/final_r7a/out/final_lr3e3_pool_4h_*"]},
+    "proposed": {1e-3: ["results/v2cal/out/v2_cal_pool_4h_*"], 3e-3: ["results/v2i/out/v2_lr3e3_cal_pool_4h_*"]},
+}
+LR_PAIRS = [("LSTM, 1 layer", "one-layer", ("PMSE", "qlstm-pool"), ("PMSE", "lstm-pool")),
+            ("Hierarchical LSTM, 1 layer", "one-layer", ("PMSE", "hq_meta-pool"), ("PMSE", "hl_meta-pool")),
+            ("Proposed pair", "proposed", PROPOSED, TWIN)]
+
+
+def lrselect() -> pd.DataFrame:
+    """Twin ratios with the learning rate chosen per model and fold on the validation block (the rate with the
+    lowest validation MSE of the seed-averaged forecast over all coins), from the rates that were run."""
+    rows = []
+    for label, grid, a, b in LR_PAIRS:
+        by_rate = {lr: _splits([a, b], runs) for lr, runs in LR_RUNS[grid].items()}
+        parts, chosen = [], {}
+        for key in (a, b):
+            for fold in range(4):
+                val = {}
+                for lr, x in by_rate.items():
+                    g = x[(x.groupset == key[0]) & (x.model == key[1]) & (x.fold == fold) & (x.split == "val")]
+                    val[lr] = float(((g.pred - g.y) ** 2).mean())
+                best = min(val, key=val.get)
+                chosen.setdefault(key[1], []).append(best)
+                x = by_rate[best]
+                parts.append(x[(x.groupset == key[0]) & (x.model == key[1]) & (x.fold == fold) & (x.split == "test")])
+        df = pd.concat(parts, ignore_index=True).assign(task="range", seed=0)
+        v = Store([df]).pair(a, b)
+        fixed = {lr: Store([x[x.split == "test"].assign(task="range", seed=0)]).pair(a, b)["ratio"] for lr, x in by_rate.items()}
+        rows.append(dict(pair=label, ratio=v["ratio"], better=v["better"], p=v["p"], ci_lo=v["ci_lo"], ci_hi=v["ci_hi"],
+                         equivalent=v["equivalent"], rates_quaternion=" ".join(f"{r:g}" for r in chosen[a[1]]),
+                         rates_real=" ".join(f"{r:g}" for r in chosen[b[1]]),
+                         **{f"ratio_at_{lr:g}": r for lr, r in fixed.items()}))
+    t = pd.DataFrame(rows)
+    t.to_csv(OUT / "v2_lrselect.csv", index=False)
+    return t
+
+
+# ============================================================================================ rangein
+def rangein(st: Store) -> pd.DataFrame:
+    """Control of the first stage: the log range of the current bar in place of the zero real part of the price
+    quaternion (group price_r), one-layer pooled models. Each model against itself on the standard groups, and
+    the twin ratios with the range as an input."""
+    (d,) = glob.glob("results/final_dr2/out/final_rangein_pool_4h_*")
+    x = S.run(d)
+    x = x[(x.groupset == "PRMSE") & (x.seed <= 2)]
+    base = S.run("results/final_fa/out/final_pool_4h_*")
+    base = base[(base.groupset == "PMSE") & (base.seed <= 2)]
+    har = st.get(HAR)
+    s2 = Store([x, base[base.model.isin(x.model.unique())], har])
+    rows = []
+    for m in sorted(x.model.unique()):
+        v = s2.pair(("PRMSE", m), ("PMSE", m))
+        rows.append(dict(contrast=f"{m}: range as input / zero real part", mse_har=s2.vs_har(("PRMSE", m)), ratio=v["ratio"],
+                         better=v["better"], p=v["p"], ci_lo=v["ci_lo"], ci_hi=v["ci_hi"]))
+    for q, r in [("qlstm", "lstm"), ("hq_meta", "hl_meta"), ("qtransformer", "transformer"), ("hq_gattn", "hl_gattn")]:
+        for gs, name in (("PRMSE", "range as input"), ("PMSE", "zero real part")):
+            v = s2.pair((gs, q + "-pool"), (gs, r + "-pool"))
+            rows.append(dict(contrast=f"{q} / {r}, {name}", ratio=v["ratio"], better=v["better"], p=v["p"],
+                             ci_lo=v["ci_lo"], ci_hi=v["ci_hi"]))
+    t = pd.DataFrame(rows)
+    ok = t.contrast.str.contains("range as input / zero")
+    t.loc[ok, "p_holm"] = holm(t.loc[ok, "p"])
+    t.to_csv(OUT / "v2_rangein.csv", index=False)
     return t
 
 
@@ -782,6 +999,7 @@ MAIN_ROWS = [
     ("Persistence", "", ("P", "persistence")),
     ("GARCH(1,1)", "", ("P", "garch")),
     ("GJR-GARCH", "", ("P", "gjr")),
+    ("CARR(1,1)", "", ("P", "carr")),
     ("HAR", "", HAR),
     ("HAR-X", "", ("PMSE", "harx")),
     ("LightGBM, pooled", "", ("PMSE", "lgbm-pool")),
@@ -816,15 +1034,15 @@ def tick_har(ens: pd.DataFrame, rate: float = 0.05) -> pd.Series:
     u = test.y - (test.pred + test.c)
     test["tick"] = u * ((1 - rate) - (u < 0))
     per = test.groupby(["groupset", "model", "dataset"]).tick.mean().unstack("dataset")
-    return (per / per.loc[HAR]).mean(axis=1)
+    return per.mean(axis=1) / per.loc[HAR].mean()
 
 
 def main_tex(st: Store) -> pd.DataFrame:
     keys = [k for _, _, k in MAIN_ROWS if k is not None]
     ens = _splits(keys, QLIKE_RUNS)
-    test = _calibrated(ens, CRASH_BAR)
+    test = _calibrated(ens, None, caps=train_caps())        # QLIKE with the realised squared range capped
     per = test.groupby(["groupset", "model", "dataset"]).ql.mean().unstack("dataset")
-    ql, tick = (per / per.loc[HAR]).mean(axis=1), tick_har(ens)
+    ql, tick = per.mean(axis=1) / per.loc[HAR].mean(), tick_har(ens)
     rows = []
     for label, cal, key in MAIN_ROWS:
         if key is None:
@@ -854,9 +1072,9 @@ def main_tex(st: Store) -> pd.DataFrame:
             lines.append(rf"\multicolumn{{9}}{{@{{}}l}}{{\textit{{{r.label}}}}} \\")
             first = False
             continue
-        better = "" if pd.isna(r.get("better")) else f"{int(r.better)}/{int(r.n)}"
+        better = "--" if pd.isna(r.get("better")) else f"{int(r.better)}/{int(r.n)}"
         if pd.isna(r.get("prop_ratio")):
-            vs = "& & "
+            vs = "-- & -- & --"
         else:
             star = "$^{*}$" if r.prop_p_holm < 0.05 else ""
             vs = f"{r.prop_ratio:.3f}{star} & {int(r.prop_better)}/15 & {r.prop_ci_lo:.3f}--{r.prop_ci_hi:.3f}"
@@ -923,7 +1141,7 @@ def robust_tex(st: Store) -> pd.DataFrame:
             if pd.isna(r.get("mse")):
                 cells.append("-- & --")
                 continue
-            vs = "" if pd.isna(r.prop_ratio) else f"{r.prop_ratio:.3f}" + ("$^{*}$" if r.prop_p_holm < 0.05 else "")
+            vs = "--" if pd.isna(r.prop_ratio) else f"{r.prop_ratio:.3f}" + ("$^{*}$" if r.prop_p_holm < 0.05 else "")
             cells.append(f"{r.mse:.3f} & {vs}")
         lines.append(f"{label} & " + " & ".join(cells) + r" \\")
     lines += [r"\bottomrule", r"\end{tabular}"]
@@ -934,14 +1152,14 @@ def robust_tex(st: Store) -> pd.DataFrame:
 if __name__ == "__main__":
     which = sys.argv[1] if len(sys.argv) > 1 else "all"
     pd.set_option("display.width", 250, "display.max_columns", 40, "display.max_rows", 200)
-    if which == "benchx_save":
-        benchx_save()
+    if which in ("benchx_save", "lgbmlag16_save"):
+        {"benchx_save": benchx_save, "lgbmlag16_save": lgbmlag16_save}[which]()
         sys.exit()
-    store = Store(parts_4h()) if which in ("bench", "benchx", "twins", "width", "blocks", "small", "main", "robust", "scope", "depth", "all") else None
-    for name, fn in [("main", lambda: main_tex(store)), ("robust", lambda: robust_tex(store)), ("bench", lambda: bench(store)), ("benchx", lambda: benchx(store)), ("twins", lambda: twins(store)), ("depth", lambda: depth_tex(store)), ("width", lambda: width(store)),
+    store = Store(parts_4h()) if which in ("bench", "benchx", "twins", "width", "blocks", "small", "main", "robust", "scope", "depth", "mcs", "rangein", "all") else None
+    for name, fn in [("main", lambda: main_tex(store)), ("robust", lambda: robust_tex(store)), ("bench", lambda: bench(store)), ("benchx", lambda: benchx(store)), ("mcs", lambda: mcs(store)), ("twins", lambda: twins(store)), ("depth", lambda: depth_tex(store)), ("width", lambda: width(store)),
                      ("blocks", lambda: blocks(store)), ("scope", lambda: scope(store)), ("small", lambda: small(store)), ("seeds", seeds),
                      ("returns", returns_pooled), ("qlike", qlike), ("select", select), ("levels", levels),
-                     ("exceed", exceed)]:
+                     ("exceed", exceed), ("lrselect", lrselect), ("rangein", lambda: rangein(store))]:
         if which in (name, "all"):
             print(f"\n=== {name}")
             print(fn().round(4).to_string(index=False))

@@ -1,0 +1,18 @@
+# V2 external review (2026-11-17): the real twin of seeds_budget_2000_cal_pool_4h.yaml (seeds 3-9 at
+# the budget of 2,000 parameters), trained on an L4 GPU while the quaternion model of that config is
+# trained on CPU. Same protocol and sizing rule: the twin is sized to the parameter count of the
+# quaternion model (1,718 parameters, which gives 4 units per source and 1,626 parameters).
+# Fixed before any run.
+name: v2_seeds_budget_2000_cal_pool_4h_twin
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [hl_meta-L2+cal]
+match: {hl_meta-L2+cal: hq_meta-L2+cal}
+seeds: [3, 4, 5, 6, 7, 8, 9]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 2000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}
