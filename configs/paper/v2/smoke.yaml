@@ -1,0 +1,14 @@
+# V2 smoke test: every new model family end to end on two coins, two epochs (not a result).
+name: v2_smoke
+datasets: [btc_4h, eth_4h]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: [har, cnn, qcnn]
+pooled_models: [lstm-L2, qlstm-L2, hl_meta-L2, hq_meta-L2, cnn-L2, qcnn-L2, hc_meta, hqc_meta]
+match: {cnn: qcnn, lstm-L2: qlstm-L2, hl_meta-L2: hq_meta-L2, cnn-L2: qcnn-L2, hc_meta: hqc_meta}
+seeds: [0]
+window: {4h: 42}
+folds: {n: 1, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 2, patience: 2, grad_clip: 1.0}

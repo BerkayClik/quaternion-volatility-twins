@@ -1,0 +1,15 @@
+# V2: the proposed model with the calendar term on daily bars (protocol of final/pool_1d.yaml).
+# The two-layer pair without calendar is in depth_pool_1d.yaml.
+name: v2_cal_pool_1d
+datasets: [btc_1d, eth_1d, sol_1d, bnb_1d, xrp_1d, ada_1d, doge_1d, link_1d, ltc_1d, dot_1d, avax_1d, trx_1d, bch_1d, xlm_1d, atom_1d]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [hq_meta-L2+cal, hl_meta-L2+cal, lstm+cal, transformer+cal]
+match: {hl_meta-L2+cal: hq_meta-L2+cal}
+seeds: [0, 1, 2]
+window: {1d: 30}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

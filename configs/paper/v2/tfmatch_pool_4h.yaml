@@ -1,0 +1,18 @@
+# V2 review round 2 (isolating control of the flat attention pair, without the calendar term): the
+# real Transformer with the activation and heads of the quaternion one, sized to the parameter count
+# of the quaternion model (21,546 against 20,993). The matched twin of the earlier stage
+# (final/twinmatch_pool_4h.yaml) was sized to the common budget, where its width steps leave it at
+# 19,073 parameters, 9% below the quaternion model. Fixed before any run.
+name: v2_tfmatch_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [transformer_g]
+match: {transformer_g: qtransformer}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

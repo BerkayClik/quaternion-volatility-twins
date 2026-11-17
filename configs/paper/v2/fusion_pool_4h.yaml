@@ -1,0 +1,25 @@
+# V2 review round 1 (REV-01, REV-19, REV-37): is the fusion-stage algebra doing anything in the
+# proposed model? Two-layer hierarchical models with the calendar term, pooled 4h.
+#   hq_<fusion>  quaternion encoders with concatenation, learned algebra (PHM), dense, and the
+#                nonlinear Hamilton / dense fusions (tanh after the mixing layer: metan, densen)
+#   hl_<fusion>  real encoders with the same fusions; hl_dense is the fully real model
+#   hlp_meta     real twin with a learned H -> H projection per group (the quaternion encoders have
+#                a 4H -> H projection, the plain real twin none)
+# hq_meta-L2+cal and hl_meta-L2+cal are in cal_pool_4h.yaml. Fixed on 2026-11-17 before any run.
+name: v2_fusion_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [hq_concat-L2+cal, hl_concat-L2+cal, hq_dense-L2+cal, hl_dense-L2+cal,
+                hq_metan-L2+cal, hl_metan-L2+cal, hq_densen-L2+cal, hl_densen-L2+cal,
+                hq_phm-L2+cal, hlp_meta-L2+cal]
+match: {hl_concat-L2+cal: hq_concat-L2+cal, hl_dense-L2+cal: hq_dense-L2+cal,
+        hl_metan-L2+cal: hq_metan-L2+cal, hl_densen-L2+cal: hq_densen-L2+cal,
+        hlp_meta-L2+cal: hq_meta-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

@@ -1,0 +1,16 @@
+# V2 review round 2 (learning-rate control, continued): the real two-source hierarchical model with
+# the calendar term, the model with the lowest error of the paper, at a learning rate of 3e-3.
+# Size as in sources_pool_4h.yaml. Fixed before any run.
+name: v2_lr3e3_sources_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMC: [price, market, calendar]
+models: []
+pooled_models: [hl_concat-L2+cal]
+match: {hl_concat-L2+cal: hq_concat-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.003, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

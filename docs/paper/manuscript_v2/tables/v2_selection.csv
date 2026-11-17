@@ -1,0 +1,13 @@
+model,val_mse_har,coins_better
+HAR,1.0,0
+LSTM,0.9436437094498958,13
+LSTM + calendar,0.8746130593695277,15
+Transformer,0.9067154575525493,13
+Transformer + calendar,0.8629338322034024,15
+"H-LSTM, 2 layers",0.910563267830371,14
+"H-LSTM, 2 layers + calendar",0.8509189674688107,15
+"H-QLSTM, 2 layers",0.9191187342870673,14
+"H-QLSTM, 2 layers + calendar",0.8552252238981454,15
+"H-QLSTM, 1 layer + calendar",0.8593648925691698,15
+"H-LSTM, price and market, calendar",0.8476828841084372,15
+"LightGBM-S, pooled",0.89187485954864,15

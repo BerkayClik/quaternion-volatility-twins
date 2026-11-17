@@ -1,0 +1,18 @@
+# V2 review round 2 (learning-rate control of the calendar-aware models): the proposed model, its
+# real twin and the two flat networks of the main table at a learning rate of 3e-3. In the earlier
+# one-layer grid the difference between the recurrent twins depends on the learning rate (larger at
+# 3e-4, absent at 3e-3), so the twin test of the proposed pair is repeated at the higher rate.
+# Sizes as in cal_pool_4h.yaml. Fixed before any run.
+name: v2_lr3e3_cal_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [hq_meta-L2+cal, hl_meta-L2+cal, lstm+cal, transformer+cal]
+match: {hl_meta-L2+cal: hq_meta-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.003, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

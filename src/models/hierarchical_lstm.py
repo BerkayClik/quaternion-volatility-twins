@@ -21,11 +21,12 @@ from .hierarchical_qlstm import _FUSION_REGISTRY
 
 class HierarchicalLSTM(nn.Module):
     def __init__(self, hidden_size: int, num_groups: int = 4, features_per_group: int = 4,
-                 fusion_type: str = "concat", group_projection: bool = False):
+                 fusion_type: str = "concat", group_projection: bool = False, num_layers: int = 1):
         super().__init__()
         self.num_groups, self.features_per_group = num_groups, features_per_group
         self.lstms = nn.ModuleList([
-            nn.LSTM(features_per_group, hidden_size, batch_first=True) for _ in range(num_groups)
+            nn.LSTM(features_per_group, hidden_size, num_layers=num_layers, batch_first=True)
+            for _ in range(num_groups)
         ])
         for lstm in self.lstms:  # forget-gate bias +1 in both bias vectors, as in RealLSTM
             with torch.no_grad():

@@ -1,0 +1,15 @@
+# V2 review round 1 (REV-16): seeds 1-2 of the pooled LightGBM-S with all 16 features, so that with seed 0
+# (final/lgbm_1d.yaml) the benchmark is a three-seed average like the networks. The seed sets the 0.8 row
+# and column subsampling. Runs on a CPU in seconds.
+name: v2_lgbm_seeds_1d
+datasets: [btc_1d, eth_1d, sol_1d, bnb_1d, xrp_1d, ada_1d, doge_1d, link_1d, ltc_1d, dot_1d, avax_1d, trx_1d, bch_1d, xlm_1d, atom_1d]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [lgbms]
+seeds: [1, 2]
+window: {1d: 30}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

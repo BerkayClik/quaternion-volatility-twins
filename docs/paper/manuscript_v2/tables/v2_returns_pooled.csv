@@ -1,0 +1,7 @@
+groupset,model,mse_over_zero,coins_better,n
+PM,hl_gattn-pool,1.0003300340635428,7,15
+PM,lstm-pool,1.000942567811719,5,15
+PM,transformer-pool,0.9994967064287555,6,15
+PMSE,hl_gattn-pool,1.0000901946530503,7,15
+PMSE,lstm-pool,1.0013076098381328,4,15
+PMSE,transformer-pool,0.998899143467572,11,15

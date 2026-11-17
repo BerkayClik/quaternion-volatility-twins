@@ -32,7 +32,7 @@ import yaml
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from src.paper.baselines import predict_baseline, predict_baseline_pooled  # noqa: E402
 from src.paper.data import make_dataset, walk_forward_folds  # noqa: E402
-from src.paper.models import build_matched, n_params  # noqa: E402
+from src.paper.models import CALENDAR, HIERARCHICAL, build_matched, n_params, target_budget  # noqa: E402
 from src.paper.train import fit_predict, fit_predict_pooled, set_seed  # noqa: E402
 
 BASELINES = {"persistence", "mean", "har", "harx", "hars", "harxs", "lgbm", "lgbms", "ridge", "garch", "gjr"}
@@ -50,11 +50,17 @@ def pools(cfg):
     return by_freq
 
 
-def _fits(model, n_groups):
-    """Hierarchical models need >= 2 groups; 4-component fusions need exactly 4."""
-    if model.startswith(("hq_", "hl_", "hlp_", "hqt_", "ht_", "htg_")) and n_groups < 2:
+def _fits(model, groups):
+    """Hierarchical models need >= 2 groups; 4-component fusions need exactly 4; a +cal model
+    needs the calendar group as the last group of the input set (it is split off by position)."""
+    n_groups = len(groups) if not isinstance(groups, int) else groups
+    if model.endswith(CALENDAR):          # the calendar group bypasses the base model
+        if not isinstance(groups, int) and groups[-1] != "calendar":
+            return False
+        n_groups -= 1
+    if model.startswith(HIERARCHICAL) and n_groups < 2:
         return False
-    if any(model.startswith(p + f) for p in ("hq_", "hl_", "hlp_", "hqt_", "ht_", "htg_") for f in ("meta", "phm")) and n_groups != 4:
+    if any(model.startswith(p + f) for p in HIERARCHICAL for f in ("meta", "phm")) and n_groups != 4:
         return False
     return True
 
@@ -62,7 +68,7 @@ def _fits(model, n_groups):
 def cells(cfg):
     # pooled cells: one model per (freq, ...), predictions written per dataset
     for freq, task, gs, model in product(pools(cfg), cfg["tasks"], cfg["groupsets"], cfg.get("pooled_models", [])):
-        if not _fits(model, len(cfg["groupsets"][gs])):
+        if not _fits(model, cfg["groupsets"][gs]):
             continue
         for seed in cfg["seeds"]:
             for fold in range(cfg["folds"]["n"]):
@@ -70,7 +76,7 @@ def cells(cfg):
     for ds, task, gs, model in product(cfg["datasets"], cfg["tasks"], cfg["groupsets"], cfg["models"]):
         if model in ("har", "harx", "hars", "harxs", "lgbm", "lgbms", "garch", "gjr") and task != "range":
             continue
-        if not _fits(model, len(cfg["groupsets"][gs])):
+        if not _fits(model, cfg["groupsets"][gs]):
             continue
         seeds = cfg["seeds"][:1] if model in BASELINES else cfg["seeds"]  # baselines are deterministic
         for seed in seeds:
@@ -146,14 +152,17 @@ def main():
                     save(p, d, y, res, {"pooled": members}, t0)
                 print(f"[{i + 1}/{len(todo)}] {ds} {task} {gs} {model} s{seed} f{fold}", flush=True)
                 continue
-            set_seed(seed)
-            net, hidden = build_matched(model[:-len(POOL)], len(groups), cfg["budget"], seq_len=cfg["window"][ds[5:]])
+            name, window = model[:-len(POOL)], cfg["window"][ds[5:]]
+            budget = target_budget(name, len(groups), cfg["budget"], cfg.get("match"), seq_len=window)
+            set_seed(seed)                               # after the twin lookup: it must not shift the seed
+            net, hidden = build_matched(name, len(groups), budget, seq_len=window)
             ys = [d.frame[f"y_{task}"].to_numpy(np.float32) for d, _ in loaded]
             results = fit_predict_pooled(net, [d.X(groups) for d, _ in loaded], ys,
                                          [f[fold] for _, f in loaded], cfg["window"][ds[5:]],
                                          cfg["train"], args.device, seed)
             for p, (d, _), y, res in zip(paths, loaded, ys, results):
-                save(p, d, y, res, {"hidden": hidden, "params": n_params(net), "best_epoch": res["best_epoch"],
+                save(p, d, y, res, {"hidden": hidden, "params": n_params(net), "budget": budget,
+                                    "best_epoch": res["best_epoch"],
                                     "epochs": res["epochs"], "pooled": members}, t0)
             print(f"[{i + 1}/{len(todo)}] {ds} {task} {gs} {model} s{seed} f{fold} "
                   f"{time.time() - t0:.1f}s (elapsed {(time.time() - t_start) / 60:.1f}m)", flush=True)
@@ -173,9 +182,10 @@ def main():
         if model in BASELINES:
             res = predict_baseline(model, d.frame, task, fo, window, d.freq, X=X)
         else:
-            set_seed(seed)
-            net, hidden = build_matched(model, len(groups), cfg["budget"], seq_len=window)
-            meta = {"hidden": hidden, "params": n_params(net)}
+            budget = target_budget(model, len(groups), cfg["budget"], cfg.get("match"), seq_len=window)
+            set_seed(seed)                               # after the twin lookup: it must not shift the seed
+            net, hidden = build_matched(model, len(groups), budget, seq_len=window)
+            meta = {"hidden": hidden, "params": n_params(net), "budget": budget}
             res = fit_predict(net, X, y, fo, window, cfg["train"], args.device, seed)
             meta.update(best_epoch=res["best_epoch"], epochs=res["epochs"])
         save(path, d, y, res, meta, t0)
