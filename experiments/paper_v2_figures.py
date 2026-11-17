@@ -8,9 +8,8 @@ data   figures/fig_data.pdf: the target and the evaluation design on the full BT
        one quaternion each, over three weeks of the last test block.
 twins  figures/fig_twins.pdf: every quaternion-against-real test of the paper, from
        tables/v2_twins_all.csv (written by paper_v2_round2.py twins): MSE ratio with its 90% interval.
-scope  figures/fig_scope.pdf: MSE relative to HAR against depth (tables/v2_depth_models.csv, written by
-       paper_v2_depth.py) and, for the hierarchical recurrent twins, against the parameter budget and the
-       learning rate (tables/v2_scope.csv, written by paper_v2_round2.py scope).
+scope  figures/fig_scope.pdf: MSE relative to HAR of the hierarchical recurrent twins against the parameter
+       budget and the learning rate (tables/v2_scope.csv, written by paper_v2_round2.py scope).
 
 Colours: Okabe-Ito blue, orange, green, vermillion in this fixed order for the components
 (r, i, j, k); the order passes the colour-vision checks of the palette validator (worst adjacent
@@ -200,33 +199,17 @@ def fig_twins(xlim: tuple[float, float] = (0.93, 1.05)):
 
 
 def fig_scope():
-    """Top: MSE relative to HAR against the depth of the encoder for the four kinds of twins of the depth grid
-    (tables/v2_depth_models.csv, written by paper_v2_depth.py). Bottom: the hierarchical recurrent twins against
-    the parameter budget and the learning rate (tables/v2_scope.csv, written by paper_v2_round2.py scope)."""
-    depth = pd.read_csv(OUT_T / "v2_depth_models.csv")
+    """MSE relative to HAR of the hierarchical recurrent twins against the parameter budget and the learning
+    rate (tables/v2_scope.csv, written by paper_v2_round2.py scope): the one-layer pair of the first stage,
+    without the calendar term, and the proposed pair."""
     t = pd.read_csv(OUT_T / "v2_scope.csv")
-    fig, axes = plt.subplots(2, 4, figsize=(7.2, 3.5))
+    fig, axes = plt.subplots(1, 4, figsize=(7.2, 1.95))
     styles = (("real", ORANGE, "o"), ("quaternion", BLUE, "s"))
-    units = {"LSTM": "recurrent layers", "H-LSTM (meta)": "recurrent layers", "CNN": "convolutions", "H-CNN (meta)": "convolutions"}
-    names = {"LSTM": "Flat LSTM", "H-LSTM (meta)": "Hierarchical LSTM", "CNN": "Flat CNN", "H-CNN (meta)": "Hierarchical CNN"}
-    for ax, fam in zip(axes[0], units):
-        for algebra, colour, marker in styles:
-            m = depth[(depth.family == fam) & (depth.algebra == algebra)]
-            base = m[m.budget == 20_000].sort_values("depth")
-            ax.plot(base.depth, base.mse_har, color=colour, marker=marker, ms=4, lw=1.2)
-            big = m[m.budget == 80_000]
-            ax.plot(big.depth, big.mse_har, ls="none", marker=marker, ms=5, mfc="white", mec=colour, mew=1.1)
-        ax.set_title(names[fam])
-        ax.set_xlabel(units[fam])
-        ax.set_xticks(sorted(depth[depth.family == fam].depth.unique()))
-        ax.set_ylim(0.865, 0.985)
-        if ax is not axes[0, 0]:
-            ax.set_yticklabels([])
-    panels = [("budget", "H-LSTM, 1 layer", "H-LSTM pair, 1 layer: budget", "trainable parameters"),
+    panels = [("budget", "H-LSTM, 1 layer", "One layer: budget", "trainable parameters"),
               ("budget", "Proposed pair", "Proposed pair: budget", "trainable parameters"),
-              ("learning rate", "H-LSTM, 1 layer", "H-LSTM pair, 1 layer: learning rate", "learning rate"),
+              ("learning rate", "H-LSTM, 1 layer", "One layer: learning rate", "learning rate"),
               ("learning rate", "Proposed pair", "Proposed pair: learning rate", "learning rate")]
-    for ax, (panel, pair, title, label) in zip(axes[1], panels):
+    for ax, (panel, pair, title, label) in zip(axes, panels):
         g = t[(t.pair == pair) & (t.panel == panel)]
         for algebra, colour, marker in styles:
             h = g[g.algebra == algebra].sort_values("x")
@@ -242,15 +225,12 @@ def fig_scope():
         ax.set_ylim(mid - half, mid + half)
         ax.set_title(title)
         ax.set_xlabel(label)
-    for ax in axes.ravel():
         ax.grid(axis="y", lw=0.3, color="0.85")
-    for row in axes:
-        row[0].set_ylabel("MSE / HAR")
+    axes[0].set_ylabel("MSE / HAR")
     handles = [plt.Line2D([], [], color=ORANGE, marker="o", ms=4, lw=1.2, label="real"),
-               plt.Line2D([], [], color=BLUE, marker="s", ms=4, lw=1.2, label="quaternion"),
-               plt.Line2D([], [], color="0.3", marker="o", ms=5, mfc="white", ls="none", label="80,000 parameters (top row)")]
-    fig.legend(handles=handles, loc="upper center", ncol=3, frameon=False, bbox_to_anchor=(0.5, 1.0))
-    fig.tight_layout(rect=(0, 0, 1, 0.955), h_pad=1.1, w_pad=0.9)
+               plt.Line2D([], [], color=BLUE, marker="s", ms=4, lw=1.2, label="quaternion")]
+    fig.legend(handles=handles, loc="upper center", ncol=2, frameon=False, bbox_to_anchor=(0.5, 1.02))
+    fig.tight_layout(rect=(0, 0, 1, 0.91), w_pad=0.9)
     fig.savefig(OUT_F / "fig_scope.pdf")
     plt.close(fig)
 

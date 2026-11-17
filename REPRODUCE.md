@@ -57,7 +57,9 @@ format).
 |---|---|
 | `v2_main` (main table: MSE, QLIKE, 95% limits), `v2_robust` (three bar lengths) | `python experiments/paper_v2_round2.py main` / `robust` |
 | `v2_twins_all.csv` (all 75 twin tests, one Holm family), `fig_twins.pdf` | `python experiments/paper_v2_round2.py twins`, then `python experiments/paper_v2_figures.py twins` |
-| `v2_scope.csv`, `v2_depth_models.csv`, `fig_scope.pdf` (depth, budget, learning rate) | `python experiments/paper_v2_depth.py`, `python experiments/paper_v2_round2.py scope`, then `python experiments/paper_v2_figures.py scope` |
+| `v2_depth` (errors by encoder family and depth) | `python experiments/paper_v2_round2.py depth` (after `twins`) |
+| `v2_scope.csv`, `fig_scope.pdf` (parameter budget, learning rate) | `python experiments/paper_v2_round2.py scope`, then `python experiments/paper_v2_figures.py scope` |
+| `v2_depth_models.csv`, `v2_depth_twins.csv` | `python experiments/paper_v2_depth.py` |
 | `v2_seeds10.csv` (ten seeds, intervals over seeds and time) | `python experiments/paper_v2_round2.py seeds` |
 | `v2_ablation`, `v2_fusion`, `v2_sources` | `python experiments/paper_v2_tables.py` |
 | `v2_bench`, `v2_benchx`, `v2_equal_width`, `v2_small_checks`, `v2_qlike_bar`, `v2_exceed`, `v2_blocks`, `v2_selection`, `v2_levels`, `v2_returns_pooled` | `python experiments/paper_v2_round2.py <name>` (see the docstring; `benchx_save` fits the linear benchmark variants first) |
