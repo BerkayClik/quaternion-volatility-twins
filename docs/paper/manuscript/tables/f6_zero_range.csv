@@ -1,0 +1,10 @@
+freq,split,bars,zero
+1d,test,8100,0
+1d,train (fold 4),28799,0
+1d,val (all folds),10740,0
+1h,test,194400,0
+1h,train (fold 4),377317,13
+1h,val (all folds),259140,0
+4h,test,48600,0
+4h,train (fold 4),142795,0
+4h,val (all folds),64740,0

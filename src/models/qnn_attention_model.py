@@ -1,0 +1,259 @@
+"""
+Full Quaternion Neural Network with Temporal Attention model.
+
+Architecture:
+Input (OHLC) -> Quaternion Encoding -> Quaternion LSTM ->
+Projection -> Temporal Attention -> Regression Head -> Output
+
+Design Principle:
+- Feature correlation -> Quaternion space (Hamilton product preserves OHLC relationships)
+- Temporal importance -> Real-valued space (attention over time steps)
+"""
+
+import torch
+import torch.nn as nn
+from .quaternion_lstm import QuaternionLSTM
+from .attention import TemporalAttention
+from .revin import RevIN, IdentityNorm
+from .dish_ts import DishTS
+
+
+class QuaternionLSTMBase(nn.Module):
+    """
+    Base class for Quaternion LSTM models.
+
+    Contains shared components: normalization layer (RevIN or Dish-TS),
+    QLSTM backbone, projection layer, output head.
+    Subclasses implement specific forward() logic.
+
+    Args:
+        hidden_size: Size of quaternion hidden features.
+        num_layers: Number of Quaternion LSTM layers.
+        dropout: Dropout rate.
+        input_size: Number of input quaternion features (default: 1 for legacy).
+        num_features: Number of features for normalization.
+        target_col: Index of target feature for scalar denormalization.
+        norm_type: Normalization strategy: ``'revin'`` or ``'dish_ts'``.
+        seq_len: Lookback window length (required for Dish-TS).
+        dish_init: Dish-TS ``reduce_mlayer`` initialization strategy.
+            One of ``'standard'``, ``'avg'``, ``'uniform'``.
+    """
+
+    def __init__(
+        self,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        input_size: int = 1,
+        num_features: int = 4,
+        target_col: int = 3,
+        norm_type: str = "revin",
+        seq_len: int = 20,
+        dish_init: str = "standard",
+        target_mode: str = "price",
+    ):
+        super().__init__()
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.input_size = input_size
+        self.target_col = target_col
+        self.target_mode = target_mode
+
+        # Normalization layer (swappable)
+        if norm_type == "none":
+            self.norm_layer = IdentityNorm()
+        elif norm_type == "dish_ts":
+            self.norm_layer = DishTS(
+                num_features=num_features,
+                seq_len=seq_len,
+                dish_init=dish_init,
+            )
+        else:
+            self.norm_layer = RevIN(num_features)
+
+        # Quaternion LSTM backbone
+        self.qlstm = QuaternionLSTM(
+            input_size=self.input_size,
+            hidden_size=hidden_size,
+            num_layers=num_layers,
+            dropout=dropout
+        )
+
+        # Projection from quaternion to real space
+        self.projection_size = hidden_size * 4
+        self.projection = nn.Linear(self.projection_size, hidden_size)
+
+        # Regression head (single linear layer, matching real LSTM simplicity)
+        self.output_head = nn.Linear(hidden_size, 1)
+
+    def encode_quaternion(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Encode OHLC as single quaternion: q = O + Hi + Lj + Ck.
+
+        This encoding preserves cross-correlations between OHLC features
+        through the Hamilton product, which is the key advantage of
+        quaternion representations.
+
+        Args:
+            x: OHLC input of shape (batch, seq_len, 4).
+
+        Returns:
+            Quaternion tensor of shape (batch, seq_len, 1, 4) where the
+            4 OHLC values become the 4 quaternion components [r, i, j, k].
+        """
+        # (batch, seq, 4*n) -> (batch, seq, n, 4): consecutive feature blocks of
+        # four become the [r, i, j, k] components of n input quaternions.
+        return x.view(x.shape[0], x.shape[1], self.input_size, 4)
+
+
+class QNNAttentionModel(QuaternionLSTMBase):
+    """
+    Quaternion LSTM with Temporal Attention for S&P 500 forecasting.
+
+    Args:
+        hidden_size: Size of quaternion hidden features.
+        num_layers: Number of Quaternion LSTM layers.
+        dropout: Dropout rate.
+        input_size: Number of input quaternion features (default: 1 for single OHLC quaternion).
+        num_features: Number of features for normalization.
+        target_col: Index of target feature for scalar denormalization.
+        norm_type: Normalization strategy: ``'revin'`` or ``'dish_ts'``.
+        seq_len: Lookback window length (required for Dish-TS).
+        dish_init: Dish-TS ``reduce_mlayer`` initialization strategy.
+    """
+
+    def __init__(
+        self,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        input_size: int = 1,
+        num_features: int = 4,
+        target_col: int = 3,
+        norm_type: str = "revin",
+        seq_len: int = 20,
+        dish_init: str = "standard",
+        target_mode: str = "price",
+    ):
+        super().__init__(
+            hidden_size, num_layers, dropout, input_size, num_features,
+            target_col, norm_type, seq_len, dish_init, target_mode,
+        )
+        self.attention = TemporalAttention(hidden_size)
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        return_attention: bool = False
+    ):
+        """
+        Forward pass.
+
+        Args:
+            x: OHLC input of shape (batch, seq_len, 4).
+            return_attention: If True, also return attention weights.
+
+        Returns:
+            Prediction of shape (batch, 1) in original price scale.
+            Optionally attention weights of shape (batch, seq_len).
+        """
+        # Instance normalization
+        x = self.norm_layer(x, 'norm')
+
+        batch_size, seq_len, _ = x.size()
+
+        # Quaternion encoding and LSTM
+        q_input = self.encode_quaternion(x)
+        qlstm_out, _ = self.qlstm(q_input)
+
+        # Flatten and project to real space
+        qlstm_flat = qlstm_out.view(batch_size, seq_len, -1)
+        projected = self.projection(qlstm_flat)
+
+        # Temporal attention
+        if return_attention:
+            context, attention_weights = self.attention(projected, return_weights=True)
+        else:
+            context = self.attention(projected)
+
+        # Regression head
+        output = self.output_head(context)
+
+        # Oracle O3: only denorm to price scale in price-mode; return-mode
+        # outputs are already in return scale and MUST NOT use price stats.
+        if self.target_mode == "price":
+            output = self.norm_layer.denorm_scalar(output, self.target_col)
+
+        if return_attention:
+            return output, attention_weights
+        return output
+
+
+class QuaternionLSTMNoAttention(QuaternionLSTMBase):
+    """
+    Quaternion LSTM without Temporal Attention (for ablation studies).
+
+    Uses the last hidden state instead of attention-weighted context.
+
+    Args:
+        hidden_size: Size of quaternion hidden features.
+        num_layers: Number of Quaternion LSTM layers.
+        dropout: Dropout rate.
+        input_size: Number of input quaternion features (default: 1 for single OHLC quaternion).
+        num_features: Number of features for normalization.
+        target_col: Index of target feature for scalar denormalization.
+        norm_type: Normalization strategy: ``'revin'`` or ``'dish_ts'``.
+        seq_len: Lookback window length (required for Dish-TS).
+        dish_init: Dish-TS ``reduce_mlayer`` initialization strategy.
+    """
+
+    def __init__(
+        self,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        input_size: int = 1,
+        num_features: int = 4,
+        target_col: int = 3,
+        norm_type: str = "revin",
+        seq_len: int = 20,
+        dish_init: str = "standard",
+        target_mode: str = "price",
+    ):
+        super().__init__(
+            hidden_size, num_layers, dropout, input_size, num_features,
+            target_col, norm_type, seq_len, dish_init, target_mode,
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        """
+        Forward pass.
+
+        Args:
+            x: OHLC input of shape (batch, seq_len, 4).
+
+        Returns:
+            Prediction of shape (batch, 1) in original price scale.
+        """
+        # Instance normalization
+        x = self.norm_layer(x, 'norm')
+
+        batch_size = x.size(0)
+
+        # Quaternion encoding and LSTM
+        q_input = self.encode_quaternion(x)
+        qlstm_out, _ = self.qlstm(q_input)
+
+        # Use last hidden state (no attention)
+        last_hidden = qlstm_out[:, -1]
+        last_hidden_flat = last_hidden.view(batch_size, -1)
+
+        # Project and output
+        projected = self.projection(last_hidden_flat)
+        output = self.output_head(projected)
+
+        # Oracle O3: price-mode only; return-mode output stays in return scale.
+        if self.target_mode == "price":
+            output = self.norm_layer.denorm_scalar(output, self.target_col)
+
+        return output

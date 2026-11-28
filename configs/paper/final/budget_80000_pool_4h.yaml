@@ -1,0 +1,13 @@
+# FINAL: parameter-budget sweep, pooled 4h, quaternion vs real (20k comes from final_pool_4h).
+name: final_budget_80000_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [lstm, qlstm, hl_meta, hq_meta]
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 80000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

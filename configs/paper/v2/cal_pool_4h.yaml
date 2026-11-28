@@ -1,0 +1,18 @@
+# V2: the calendar of the target bar as an additive term (suffix +cal) for the main models,
+# pooled 4h. The base models read the four source groups; the calendar group comes last.
+# Added on 2026-11-16 after the depth grid: without calendar information no network beats the
+# pooled LightGBM with calendar dummies (0.853 x HAR against 0.875 for the best network).
+name: v2_cal_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [lstm+cal, qlstm+cal, transformer+cal, qtransformer+cal,
+                hl_meta+cal, hq_meta+cal, hl_meta-L2+cal, hq_meta-L2+cal, ht_meta+cal, hqt_meta+cal]
+match: {hl_meta-L2+cal: hq_meta-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

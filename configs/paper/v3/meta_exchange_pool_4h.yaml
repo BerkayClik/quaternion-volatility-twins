@@ -1,0 +1,18 @@
+# V3 candidate B (2026-11-17, fixed before any run). The meta-quaternion model on four groups of
+# exchange data: price with the log range of the bar as its real part, market, technical indicators
+# and the calendar of the target bar as the fourth quaternion (no vendor data, no additive calendar
+# term). It asks whether the meta-quaternion layer, which needs exactly four groups, can be kept in a
+# model without the social and sentiment sources. One layer, as candidate A. Same folds, seeds,
+# budget and training protocol. Selection as in candidate A: on the validation blocks.
+name: v3_meta_exchange_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PRMTC: [price_r, market, technical, calendar]
+models: []
+pooled_models: [hq_meta, hl_meta]
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

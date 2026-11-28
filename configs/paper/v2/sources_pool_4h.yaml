@@ -1,0 +1,18 @@
+# V2 review round 1 (REV-03): what do the social and the sentiment source add to the two-layer
+# hierarchical model with the calendar term? Concatenation fusion, which works for any number of
+# groups (the four-source version, PMSEC, is in fusion_pool_4h.yaml). Fixed before any run.
+name: v2_sources_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMC: [price, market, calendar]
+  PMSC: [price, market, social, calendar]
+  PMEC: [price, market, sentiment, calendar]
+models: []
+pooled_models: [hq_concat-L2+cal, hl_concat-L2+cal]
+match: {hl_concat-L2+cal: hq_concat-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

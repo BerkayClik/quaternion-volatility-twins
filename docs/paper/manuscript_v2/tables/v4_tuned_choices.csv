@@ -1,0 +1,29 @@
+family,setting,fits
+CNN,lr 1e-3,9
+CNN,lr 3e-3,7
+CNN,lr 3e-4,4
+DLinear,lr 3e-4,20
+H-LSTM,lr 1e-3,9
+H-LSTM,lr 3e-3,6
+H-LSTM,lr 3e-4,5
+H-QLSTM,lr 1e-3,5
+H-QLSTM,lr 3e-3,8
+H-QLSTM,lr 3e-4,7
+LightGBM,leaves15_lr0.03_min100,1
+LightGBM,leaves15_lr0.03_min200,3
+LightGBM,leaves31_lr0.03_min100,3
+LightGBM,leaves31_lr0.03_min200,5
+LightGBM,leaves63_lr0.03_min100,1
+LightGBM,leaves63_lr0.03_min200,7
+PatchTST,"+in, lr 1e-3",1
+PatchTST,lr 1e-3,3
+PatchTST,lr 3e-3,12
+PatchTST,lr 3e-4,4
+QCNN,lr 1e-3,6
+QCNN,lr 3e-3,6
+QCNN,lr 3e-4,8
+Transformer,lr 1e-3,10
+Transformer,lr 3e-4,10
+iTransformer,lr 1e-3,3
+iTransformer,lr 3e-3,13
+iTransformer,lr 3e-4,4

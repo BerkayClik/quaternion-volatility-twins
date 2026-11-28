@@ -1,0 +1,4 @@
+freq,n_models,n_mcs,members
+4h,53,3,hl_gattn-pool PM; lgbms-pool PM; lgbms-pool PMSE
+1h,53,1,lgbms-pool PM
+1d,53,12,hqt_concat-pool PM; ht_concat-pool PM; lgbms-pool PM; qtransformer-pool PM; transformer-pool PM; hars PMSE; hars-pool PMSE; harxs PMSE; harxs-pool PMSE; ht_concat-pool PMSE; ht_meta-pool PMSE; lgbms-pool PMSE

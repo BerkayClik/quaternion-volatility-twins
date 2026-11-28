@@ -1,0 +1,17 @@
+# V2 review round 2 (parameter efficiency): the proposed model and its real twin at a budget of
+# 5000 parameters; 20,000 is in cal_pool_4h.yaml. The budgets 2,000, 5,000 and 80,000 are those of
+# the earlier one-layer sweep (final/budget_*_pool_4h.yaml). At every budget the real twin is
+# sized to the parameter count of the quaternion model. Fixed before any run.
+name: v2_budget_5000_cal_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [hq_meta-L2+cal, hl_meta-L2+cal]
+match: {hl_meta-L2+cal: hq_meta-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 5000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

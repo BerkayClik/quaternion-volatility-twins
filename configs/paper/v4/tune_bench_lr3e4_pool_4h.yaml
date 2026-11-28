@@ -1,0 +1,15 @@
+# V4 tuning of the benchmarks (plan in experiments/paper_v4_bench.py, committed before these runs): the six benchmark networks at a learning rate of 3e-4, five seeds.
+# Everything else is the configuration of the paper (configs/paper/v3/a_baselines_pool_4h.yaml).
+name: v4_tune_bench_lr3e4_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [dlinear, patchtst, itransformer, transformer, qcnn-L6, cnn-L6]
+match: {cnn-L6: qcnn-L6}
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.0003, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

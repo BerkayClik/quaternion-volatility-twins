@@ -1,0 +1,16 @@
+# V3 grid for candidate A (2026-11-18, fixed before any run; all files a_*.yaml were committed together).
+# Candidate A: hq_gattn on price with range, market and calendar (gattn_range_pool_4h.yaml); hl_gattn is
+# its real twin. Same folds, budget and training protocol as the paper unless a line says otherwise.
+# Daily bars.
+name: v3_a_pool_1d
+datasets: [btc_1d, eth_1d, sol_1d, bnb_1d, xrp_1d, ada_1d, doge_1d, link_1d, ltc_1d, dot_1d, avax_1d, trx_1d, bch_1d, xlm_1d, atom_1d]
+tasks: [range]
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn]
+seeds: [0, 1, 2]
+window: {1d: 30}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

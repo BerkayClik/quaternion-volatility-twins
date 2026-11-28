@@ -1,0 +1,13 @@
+# Quaternion ablation, pooled 4h (same factors as qabl_4h).
+name: pool_4h_qabl
+datasets: [btc_4h, bnb_4h, eth_4h, sol_4h, xrp_4h]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [hq_gattn, hq_phm, hq_dense, hl_concat, hl_gattn, hl_meta, hl_phm, hl_dense]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 90, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

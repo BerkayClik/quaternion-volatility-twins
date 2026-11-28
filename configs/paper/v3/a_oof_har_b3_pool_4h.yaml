@@ -1,0 +1,20 @@
+# V3 three-model cascade HAR -> network -> LightGBM: out-of-fold forecasts of the second stage (asked for by the
+# advisor, 2026-11-18; fixed before the run). The network of configs/paper/v3/a_cascade_har_pool_4h.yaml (candidate A
+# trained on the residual of HAR) is trained without block 3 of the five blocks of time of the training rows; the
+# "test" forecasts of a cell are those of block 3. Blocks and stage 1 as in the cascade, scaling of the whole training
+# block (runner key `oof`, src/paper/data.held_out_fold). The third stage, LightGBM on what HAR and the network leave,
+# is fitted on these forecasts: experiments/paper_v3_triple.py third. Five seeds. Nothing is tuned.
+name: v3_a_oof_har_b3_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+offset_dir: offsets/v3_cascade_har_4h
+oof: {blocks: 5, block: 3}
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

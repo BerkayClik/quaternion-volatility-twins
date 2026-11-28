@@ -1,0 +1,17 @@
+# FINAL: group ablation and fusion/noise controls, pooled 4h.
+name: final_ablation_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMS: [price, market, social]
+  PMSN: [price, market, social, noise]
+  PMNN: [price, market, noise, noise2]
+  PMTE: [price, market, technical, sentiment]
+  PTSE: [price, technical, social, sentiment]
+models: []
+pooled_models: [lstm, transformer, hq_meta, hl_meta, ht_meta, hqt_meta, hq_phm, hl_phm, hq_dense, hl_dense]
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

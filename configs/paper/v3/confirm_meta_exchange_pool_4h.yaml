@@ -1,0 +1,20 @@
+# V3 confirmation fold (plan fixed and committed before the exchange data after 14 October 2026 were
+# downloaded; see experiments/paper_v3_confirm.py): candidate B and its real twin.
+# One further walk-forward fold with the protocol of folds 1-4: the test block is the 33 days after the
+# end of the paper's sample (rows after 2026-10-14 16:00 UTC up to 2026-11-16 16:00 UTC, 198 bars per
+# coin), the validation block the 180 days before it, training everything earlier. Models, features,
+# budget and training protocol are those of the runs on folds 1-4; nothing is tuned on this block.
+# Run with --data-root data_post (exchange data downloaded again, vendor data of the same snapshot).
+name: v3_confirm_meta_exchange_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+extend_past_lunar: true
+groupsets:
+  PRMTC: [price_r, market, technical, calendar]
+models: []
+pooled_models: [hq_meta, hl_meta]
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 1, test_days: 33, val_days: 180, end: "2026-11-16 16:00"}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

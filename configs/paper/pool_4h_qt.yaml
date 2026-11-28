@@ -1,0 +1,15 @@
+# Quaternion Transformers (pooled 4h): flat quaternion Transformer, hierarchical
+# quaternion Transformer (hqt_*) and the hierarchical real Transformer control (ht_*).
+name: pool_4h_qt
+datasets: [btc_4h, bnb_4h, eth_4h, sol_4h, xrp_4h]
+tasks: [range]
+groupsets:
+  P: [price]
+  PMSE: [price, market, social, sentiment]
+models: []
+pooled_models: [qtransformer, hqt_meta, hqt_concat, hqt_gattn, ht_meta, ht_concat]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 90, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

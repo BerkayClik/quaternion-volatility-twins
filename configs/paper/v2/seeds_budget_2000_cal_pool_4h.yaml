@@ -1,0 +1,17 @@
+# V2 external review (2026-11-17): seven more seeds (3-9) of the proposed pair at the budget of 2,000
+# parameters, so that its comparison rests on ten seeds per model and includes the variation between
+# seeds, as for the pair at 20,000 parameters. Seeds 0-2 are in budget_2000_cal_pool_4h.yaml (trained
+# on an L4 GPU); these seeds are trained on CPU. Fixed before any run.
+name: v2_seeds_budget_2000_cal_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSEC: [price, market, social, sentiment, calendar]
+models: []
+pooled_models: [hq_meta-L2+cal, hl_meta-L2+cal]
+match: {hl_meta-L2+cal: hq_meta-L2+cal}
+seeds: [3, 4, 5, 6, 7, 8, 9]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 2000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

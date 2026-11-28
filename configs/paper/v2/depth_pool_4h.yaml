@@ -1,0 +1,22 @@
+# V2 (advisor review, 2026-11-16): depth and convolutional twins, pooled 4h, 16 features.
+# The grid was fixed before any run: recurrent depth 1-3, hierarchical recurrent depth 1-2,
+# temporal CNNs with 2, 4 and 6 convolutions (flat) and 2 and 4 (hierarchical).
+# The depth-1 recurrent pairs repeat paper v1 (same protocol, common budget); every new
+# real model is sized to the parameter count of its quaternion twin (`match`).
+name: v2_depth_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMSE: [price, market, social, sentiment]
+models: [har]
+pooled_models: [lstm, qlstm, hl_meta, hq_meta,
+                lstm-L2, qlstm-L2, lstm-L3, qlstm-L3, hl_meta-L2, hq_meta-L2,
+                cnn-L2, qcnn-L2, cnn, qcnn, cnn-L6, qcnn-L6,
+                hc_meta-L2, hqc_meta-L2, hc_meta, hqc_meta]
+match: {lstm-L2: qlstm-L2, lstm-L3: qlstm-L3, hl_meta-L2: hq_meta-L2,
+        cnn-L2: qcnn-L2, cnn: qcnn, cnn-L6: qcnn-L6, hc_meta-L2: hqc_meta-L2, hc_meta: hqc_meta}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

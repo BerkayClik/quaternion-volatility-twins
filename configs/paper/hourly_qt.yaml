@@ -1,0 +1,14 @@
+# Quaternion Transformers, single-coin hourly.
+name: hourly_qt
+start: "2023-01-01"
+datasets: [btc_1h, bnb_1h, eth_1h, sol_1h, xrp_1h]
+tasks: [range]
+groupsets:
+  P: [price]
+  PMSE: [price, market, social, sentiment]
+models: [qtransformer, hqt_meta, hqt_concat, ht_meta, ht_concat]
+seeds: [0, 1, 2]
+window: {1h: 48}
+folds: {n: 4, test_days: 90, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

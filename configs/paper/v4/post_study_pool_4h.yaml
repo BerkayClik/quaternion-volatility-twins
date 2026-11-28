@@ -1,0 +1,17 @@
+# Block after the sample (plan in experiments/paper_v5_post.py, committed before the download and the run; point 3 of
+# experiments/paper_v4_round3.py): one fold on the bars after 2026-10-14 16:00 UTC up to 2026-11-28 00:00 UTC (44 days and 8 hours),
+# the frozen system, exchange data only, samples from 2020-01-01. Run with the download of 2026-11-28 (data_sub) as data root.
+name: v4_post_study_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+exchange_only: true
+start: "2020-01-01"
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn, transformer]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 1, test_days: 44.333333333333336, val_days: 180, end: "2026-11-28 00:00"}   # 133/3 days: the block starts after 2026-10-14 16:00
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

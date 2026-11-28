@@ -1,0 +1,15 @@
+# Seeds 3 and 4 of candidate A and its real twin on 1d bars (2026-11-22), for five runs of the hybrid on every bar length
+# (experiments/paper_v3_bars.py; plan fixed before these runs). Same model, folds, budget and protocol as a_pool_*.yaml.
+# Daily bars.
+name: v3_a_seeds_pool_1d
+datasets: [btc_1d, eth_1d, sol_1d, bnb_1d, xrp_1d, ada_1d, doge_1d, link_1d, ltc_1d, dot_1d, avax_1d, trx_1d, bch_1d, xlm_1d, atom_1d]
+tasks: [range]
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn]
+seeds: [3, 4]
+window: {1d: 30}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

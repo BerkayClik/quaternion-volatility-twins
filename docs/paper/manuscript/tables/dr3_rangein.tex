@@ -1,0 +1,21 @@
+\begin{tabular}{llrrrrr}
+\toprule
+Model & Inputs & \multicolumn{2}{c}{MSE / HAR} & With range & Coins & DM \\
+ & & pure & with range & / pure & better & \\
+\midrule
+LSTM (pooled) & P & 0.943 & 0.932 & 0.989 & 14/15 & -4.74$^{*}$ \\
+LSTM (pooled) & PMSE & 0.907 & 0.889 & 0.980 & 15/15 & -7.22$^{*}$ \\
+QLSTM (pooled) & P & 0.955 & 0.944 & 0.988 & 13/15 & -4.16$^{*}$ \\
+QLSTM (pooled) & PMSE & 0.926 & 0.910 & 0.984 & 14/15 & -5.30$^{*}$ \\
+Transformer (pooled) & P & 0.916 & 0.911 & 0.995 & 9/15 & -2.26 \\
+Transformer (pooled) & PMSE & 0.885 & 0.875 & 0.990 & 11/15 & -3.29$^{*}$ \\
+QTransformer (pooled) & P & 0.916 & 0.906 & 0.990 & 12/15 & -3.74$^{*}$ \\
+QTransformer (pooled) & PMSE & 0.876 & 0.872 & 0.995 & 9/15 & -1.84 \\
+H-LSTM (meta, pooled) & PMSE & 0.881 & 0.867 & 0.985 & 12/15 & -6.28$^{*}$ \\
+H-QLSTM (meta, pooled) & PMSE & 0.889 & 0.880 & 0.990 & 12/15 & -3.95$^{*}$ \\
+H-LSTM (group attn., pooled) & PMSE & 0.871 & 0.861 & 0.989 & 13/15 & -4.88$^{*}$ \\
+H-QLSTM (group attn., pooled) & PMSE & 0.882 & 0.873 & 0.991 & 13/15 & -4.17$^{*}$ \\
+Ridge & P & 1.878 & 1.052 & 0.779 & 15/15 & -1.83 \\
+Ridge & PMSE & 1.178 & 0.974 & 0.859 & 15/15 & -4.32$^{*}$ \\
+\bottomrule
+\end{tabular}

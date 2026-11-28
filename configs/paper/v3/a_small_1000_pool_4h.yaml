@@ -1,0 +1,23 @@
+# V3 small-model test of the quaternion algebra (fixed before the run, 2026-11-18). The one place where the
+# study has a hint in favour of the quaternion model is a small parameter budget (paper v2: shrunk to 2,000
+# parameters the quaternion model loses 0.5% and its real twin 1.5%, but the difference between the two, 0.4%,
+# is not established across seeds). This test asks whether the hint holds on another design and grows as the
+# models shrink: candidate A (hq_gattn) and its real twin at budgets of 500, 1,000 and 2,000 parameters, ten
+# seeds, the real twin sized to the parameter count of the quaternion model (key match). Everything else as in
+# configs/paper/v3/gattn_range_pool_4h.yaml. Reading, fixed here: per budget the ten-seed ratio of the MSE of
+# the quaternion model to that of its twin, with the cross-coin DM test and the joint seed-and-time interval.
+# An advantage of the quaternion model is claimed only if that interval lies below 1 at two of the three
+# budgets at least; otherwise the result is reported as no advantage.
+name: v3_a_small_1000_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn]
+match: {hl_gattn: hq_gattn}
+seeds: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 1000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

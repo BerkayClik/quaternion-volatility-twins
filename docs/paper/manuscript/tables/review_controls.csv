@@ -1,0 +1,35 @@
+block,freq,model,variant,mse,ratio,better,p
+Weight decay (single coin),4h,lstm,none,1.0406152711658563,,,
+Weight decay (single coin),4h,lstm,wd 1e-4,1.0404986599889965,,,
+Weight decay (single coin),4h,lstm,wd 1e-3,1.0301673766415453,,,
+Weight decay (single coin),4h,transformer,none,0.9768036972007663,,,
+Weight decay (single coin),4h,transformer,wd 1e-4,0.9755419073848177,,,
+Weight decay (single coin),4h,transformer,wd 1e-3,0.9682483700921138,,,
+Weight decay (single coin),4h,hl_meta,none,0.9759006998706699,,,
+Weight decay (single coin),4h,ht_meta,none,0.933461811610707,,,
+Weight decay (single coin),1d,lstm,none,1.150998228471699,,,
+Weight decay (single coin),1d,lstm,wd 1e-4,1.151635432090985,,,
+Weight decay (single coin),1d,lstm,wd 1e-3,1.1475946526740313,,,
+Weight decay (single coin),1d,transformer,none,1.0895957867682882,,,
+Weight decay (single coin),1d,transformer,wd 1e-4,1.0870554051420303,,,
+Weight decay (single coin),1d,transformer,wd 1e-3,1.084543302763763,,,
+Weight decay (single coin),1d,hl_meta,none,1.0498479593497225,,,
+Weight decay (single coin),1d,ht_meta,none,1.0382507869511441,,,
+Random partitions (4h),4h,hl_gattn-pool,semantic,0.8710858783574591,,,
+Random partitions (4h),4h,hl_gattn-pool,R1,0.8955140895916208,1.027987403741384,0.0,4.189093516515641e-12
+Random partitions (4h),4h,hl_gattn-pool,R2,0.8661601810214145,0.9938472367555816,12.0,0.1627025527441961
+Random partitions (4h),4h,hl_gattn-pool,R3,0.88399104493063,1.0150799880361525,2.0,5.8384286561130594e-05
+Random partitions (4h),4h,hl_meta-pool,semantic,0.881075402787901,,,
+Random partitions (4h),4h,hl_meta-pool,R1,0.9095622664478511,1.0324384473494679,0.0,3.248512570053208e-13
+Random partitions (4h),4h,hl_meta-pool,R2,0.8640662423414649,0.9800372654792447,14.0,2.1484700283291858e-06
+Random partitions (4h),4h,hl_meta-pool,R3,0.8920217612161038,1.012686414528432,1.0,0.0006614671015374718
+Random partitions (4h),4h,hq_meta-pool,semantic,0.8893050866530554,,,
+Random partitions (4h),4h,hq_meta-pool,R1,0.9303248419243625,1.046635727713899,0.0,0.0
+Random partitions (4h),4h,hq_meta-pool,R2,0.8916946493244484,1.0021195659049942,9.0,0.421635054641039
+Random partitions (4h),4h,hq_meta-pool,R3,0.9204745168004304,1.0352540881163652,0.0,1.1102230246251565e-15
+Random partitions (4h),4h,hl_meta,semantic,0.9759006998706699,,,
+Random partitions (4h),4h,hl_meta,R1,0.989264058118462,1.0135201856135956,1.0,9.375562790570058e-07
+Random partitions (4h),4h,hl_meta,R2,0.9816697842395867,1.0057218383950581,5.0,0.03375567957199754
+Random partitions (4h),4h,hl_meta,R3,0.9935458391311661,1.0179998390046403,2.0,6.18924911321983e-11
+2k bracketing (pooled 4h),4h,hq_meta-pool,"vs H-LSTM H=7 (1,891)",,0.9913232647825291,14.0,0.000178080639311462
+2k bracketing (pooled 4h),4h,hq_meta-pool,"vs H-LSTM H=8 (2,353)",,0.9971321287146426,11.0,0.2379214144746853

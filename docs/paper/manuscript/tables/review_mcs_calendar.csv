@@ -1,0 +1,4 @@
+freq,n_models,n_calendar_nets,n_mcs,members
+4h,65,12,4,hl_gattn-pool PMC; hq_gattn-pool PMC; lstm-pool PMC; transformer-pool PMC
+1h,61,8,1,hl_gattn-pool PMC
+1d,65,12,20,hl_gattn-pool PC; hq_gattn-pool PC; hqt_concat-pool PC; ht_concat-pool PC; lstm-pool PC; transformer-pool PC; lgbms-pool PM; transformer-pool PM; hl_gattn-pool PMC; hq_gattn-pool PMC; hqt_concat-pool PMC; ht_concat-pool PMC; lstm-pool PMC; transformer-pool PMC; hars PMSE; hars-pool PMSE; harxs PMSE; harxs-pool PMSE; ht_concat-pool PMSE; lgbms-pool PMSE

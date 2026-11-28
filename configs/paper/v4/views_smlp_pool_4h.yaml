@@ -1,0 +1,15 @@
+# V4 third round, views (plan in experiments/paper_v4_round3.py, committed before the run): a network on the summary
+# view. smlp receives from the window what the lagged LightGBM-S receives (last bar, means over 6 and 42 bars,
+# calendar of the target bar). Data, folds, budget and protocol are those of the paper.
+name: v4_views_smlp_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [smlp]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

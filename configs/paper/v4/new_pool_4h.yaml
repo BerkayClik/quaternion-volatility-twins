@@ -1,0 +1,17 @@
+# V4 confirmation on 15 coins that played no part in the design (plan in experiments/paper_v4_newcoins.py, committed
+# before any data of these coins were downloaded; the coins follow from the rule there, see newcoins.json).
+# The system of the paper, unchanged: both versions of the network and the Transformer, five seeds, the folds of the paper.
+name: v4_new_pool_4h
+datasets: [shib_4h, near_4h, rune_4h, fet_4h, fil_4h, hbar_4h, inj_4h, uni_4h, icp_4h, etc_4h, aave_4h, crv_4h, stx_4h, trb_4h, ar_4h]
+tasks: [range]
+exchange_only: true
+start: "2020-01-01"
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn, transformer]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180, end: "2026-10-14 16:00"}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

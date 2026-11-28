@@ -1,0 +1,18 @@
+# V3 cascade on the confirmation fold (fixed before the run, 2026-11-18): configs/paper/v3/a_cascade_pool_4h.yaml
+# on the fold of configs/paper/v3/confirm_gattn_range_pool_4h.yaml (test block: the 33 days after the end of
+# the paper's sample). Stage 1 is refitted for this fold in the same way (experiments/paper_v3_cascade.py
+# offsets confirm). Run with --data-root data_post.
+name: v3_confirm_cascade_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+extend_past_lunar: true
+offset_dir: offsets/v3_cascade_4h
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn]
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 1, test_days: 33, val_days: 180, end: "2026-11-16 16:00"}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

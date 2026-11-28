@@ -1,0 +1,972 @@
+{
+ "rule": {
+  "listed_before": "2021-07-01",
+  "rank_year": 2024,
+  "max_gap_days": 7,
+  "n": 15,
+  "excluded": [
+   "AEUR",
+   "BETH",
+   "BFUSD",
+   "BNSOL",
+   "BUSD",
+   "CBETH",
+   "DAI",
+   "EUR",
+   "EURI",
+   "FDUSD",
+   "LSETH",
+   "PAXG",
+   "PYUSD",
+   "RETH",
+   "STETH",
+   "SUSD",
+   "TUSD",
+   "USD1",
+   "USDC",
+   "USDE",
+   "USDP",
+   "UST",
+   "USTC",
+   "WBETH",
+   "WBTC",
+   "WETH",
+   "WSTETH",
+   "XAUT",
+   "XUSD"
+  ],
+  "date": "2026-11-23",
+  "candidates": 494
+ },
+ "chosen": [
+  "shib",
+  "near",
+  "rune",
+  "fet",
+  "fil",
+  "hbar",
+  "inj",
+  "uni",
+  "icp",
+  "etc",
+  "aave",
+  "crv",
+  "stx",
+  "trb",
+  "ar"
+ ],
+ "ranking": [
+  {
+   "coin": "shib",
+   "first_bar": "2021-05-10",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 60603416279.00876,
+   "eligible": true
+  },
+  {
+   "coin": "near",
+   "first_bar": "2020-10-14",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 31417565253.214806,
+   "eligible": true
+  },
+  {
+   "coin": "rune",
+   "first_bar": "2020-09-04",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 27877470969.0906,
+   "eligible": true
+  },
+  {
+   "coin": "fet",
+   "first_bar": "2019-02-28",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 27625019381.353157,
+   "eligible": true
+  },
+  {
+   "coin": "fil",
+   "first_bar": "2020-10-15",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 21754363718.92162,
+   "eligible": true
+  },
+  {
+   "coin": "hbar",
+   "first_bar": "2019-09-29",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 19287586971.326393,
+   "eligible": true
+  },
+  {
+   "coin": "inj",
+   "first_bar": "2020-10-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 16112343233.235844,
+   "eligible": true
+  },
+  {
+   "coin": "uni",
+   "first_bar": "2020-09-17",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 15293605940.64584,
+   "eligible": true
+  },
+  {
+   "coin": "icp",
+   "first_bar": "2021-05-11",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 13773555873.13572,
+   "eligible": true
+  },
+  {
+   "coin": "etc",
+   "first_bar": "2018-06-12",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 13270667104.5056,
+   "eligible": true
+  },
+  {
+   "coin": "aave",
+   "first_bar": "2020-10-15",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 12463774501.473969,
+   "eligible": true
+  },
+  {
+   "coin": "crv",
+   "first_bar": "2020-08-15",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 11371021312.61014,
+   "eligible": true
+  },
+  {
+   "coin": "stx",
+   "first_bar": "2019-10-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 11267151601.24953,
+   "eligible": true
+  },
+  {
+   "coin": "trb",
+   "first_bar": "2020-08-29",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 10839117782.83394,
+   "eligible": true
+  },
+  {
+   "coin": "ar",
+   "first_bar": "2021-05-14",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 9950173187.604229,
+   "eligible": true
+  },
+  {
+   "coin": "sand",
+   "first_bar": "2020-08-14",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 9200596581.8808,
+   "eligible": true
+  },
+  {
+   "coin": "ckb",
+   "first_bar": "2021-01-26",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 8436392059.4886,
+   "eligible": true
+  },
+  {
+   "coin": "algo",
+   "first_bar": "2019-06-22",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 7224597442.953401,
+   "eligible": true
+  },
+  {
+   "coin": "cfx",
+   "first_bar": "2021-03-29",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 7128474888.5583,
+   "eligible": true
+  },
+  {
+   "coin": "grt",
+   "first_bar": "2020-12-17",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 7011598856.2165,
+   "eligible": true
+  },
+  {
+   "coin": "vet",
+   "first_bar": "2018-07-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 6610272556.48045,
+   "eligible": true
+  },
+  {
+   "coin": "chz",
+   "first_bar": "2019-09-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 6503267241.20541,
+   "eligible": true
+  },
+  {
+   "coin": "cake",
+   "first_bar": "2021-02-19",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 6336849367.7124605,
+   "eligible": true
+  },
+  {
+   "coin": "luna",
+   "first_bar": "2020-08-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 18,
+   "quote_volume_2024": 6018130517.11212,
+   "eligible": false
+  },
+  {
+   "coin": "theta",
+   "first_bar": "2019-04-10",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 5803134624.7335,
+   "eligible": true
+  },
+  {
+   "coin": "rsr",
+   "first_bar": "2020-08-27",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 5705927635.28842,
+   "eligible": true
+  },
+  {
+   "coin": "mask",
+   "first_bar": "2021-05-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 5271387207.2104,
+   "eligible": true
+  },
+  {
+   "coin": "ftt",
+   "first_bar": "2019-12-20",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 311,
+   "quote_volume_2024": 5207576869.432702,
+   "eligible": false
+  },
+  {
+   "coin": "lpt",
+   "first_bar": "2021-05-28",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 5104484555.6522,
+   "eligible": true
+  },
+  {
+   "coin": "xvg",
+   "first_bar": "2021-06-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3943076200.159906,
+   "eligible": true
+  },
+  {
+   "coin": "sushi",
+   "first_bar": "2020-09-01",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3876269436.1670995,
+   "eligible": true
+  },
+  {
+   "coin": "axs",
+   "first_bar": "2020-11-04",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3856441632.5331,
+   "eligible": true
+  },
+  {
+   "coin": "iota",
+   "first_bar": "2018-05-31",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3810799353.4314127,
+   "eligible": true
+  },
+  {
+   "coin": "rose",
+   "first_bar": "2020-11-19",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3772278844.2510896,
+   "eligible": true
+  },
+  {
+   "coin": "neo",
+   "first_bar": "2017-11-20",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3668476011.0272,
+   "eligible": true
+  },
+  {
+   "coin": "zen",
+   "first_bar": "2020-07-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3625207232.9792,
+   "eligible": true
+  },
+  {
+   "coin": "mana",
+   "first_bar": "2020-08-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3503949747.765748,
+   "eligible": true
+  },
+  {
+   "coin": "egld",
+   "first_bar": "2020-09-03",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3484649551.4997997,
+   "eligible": true
+  },
+  {
+   "coin": "celo",
+   "first_bar": "2021-01-05",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3383016765.2089396,
+   "eligible": true
+  },
+  {
+   "coin": "uma",
+   "first_bar": "2020-09-09",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3124586319.9978,
+   "eligible": true
+  },
+  {
+   "coin": "snx",
+   "first_bar": "2020-07-09",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3049084927.9766,
+   "eligible": true
+  },
+  {
+   "coin": "coti",
+   "first_bar": "2020-02-26",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 3033956507.1324,
+   "eligible": true
+  },
+  {
+   "coin": "xtz",
+   "first_bar": "2019-09-24",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2963065045.0718,
+   "eligible": true
+  },
+  {
+   "coin": "zrx",
+   "first_bar": "2019-02-28",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2939242330.4564,
+   "eligible": true
+  },
+  {
+   "coin": "super",
+   "first_bar": "2021-03-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2867068050.332131,
+   "eligible": true
+  },
+  {
+   "coin": "sun",
+   "first_bar": "2020-09-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 4,
+   "quote_volume_2024": 2838160894.226534,
+   "eligible": true
+  },
+  {
+   "coin": "og",
+   "first_bar": "2020-12-30",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2800564969.4411006,
+   "eligible": true
+  },
+  {
+   "coin": "iotx",
+   "first_bar": "2019-11-14",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2709481877.3289905,
+   "eligible": true
+  },
+  {
+   "coin": "zil",
+   "first_bar": "2019-02-19",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2623935149.860897,
+   "eligible": true
+  },
+  {
+   "coin": "1inch",
+   "first_bar": "2020-12-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2607104457.56178,
+   "eligible": true
+  },
+  {
+   "coin": "comp",
+   "first_bar": "2020-06-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2603865494.1872206,
+   "eligible": true
+  },
+  {
+   "coin": "pha",
+   "first_bar": "2021-06-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2554194363.8424997,
+   "eligible": true
+  },
+  {
+   "coin": "ankr",
+   "first_bar": "2019-07-23",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2494871674.657176,
+   "eligible": true
+  },
+  {
+   "coin": "kava",
+   "first_bar": "2019-10-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2459972267.735078,
+   "eligible": true
+  },
+  {
+   "coin": "one",
+   "first_bar": "2019-06-01",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2420486465.7562704,
+   "eligible": true
+  },
+  {
+   "coin": "chr",
+   "first_bar": "2020-05-07",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2399747133.6137,
+   "eligible": true
+  },
+  {
+   "coin": "slp",
+   "first_bar": "2021-04-30",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2314731858.49876,
+   "eligible": true
+  },
+  {
+   "coin": "hot",
+   "first_bar": "2019-02-18",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2220635464.547496,
+   "eligible": true
+  },
+  {
+   "coin": "arpa",
+   "first_bar": "2019-11-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2209902571.3290553,
+   "eligible": true
+  },
+  {
+   "coin": "sc",
+   "first_bar": "2020-07-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2207795015.169539,
+   "eligible": true
+  },
+  {
+   "coin": "skl",
+   "first_bar": "2020-12-01",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2204928413.0354004,
+   "eligible": true
+  },
+  {
+   "coin": "ksm",
+   "first_bar": "2020-09-04",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2139207607.6613202,
+   "eligible": true
+  },
+  {
+   "coin": "zec",
+   "first_bar": "2019-03-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 2135579905.4874697,
+   "eligible": true
+  },
+  {
+   "coin": "rvn",
+   "first_bar": "2019-09-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1957155733.388587,
+   "eligible": true
+  },
+  {
+   "coin": "enj",
+   "first_bar": "2019-04-18",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1930428278.76259,
+   "eligible": true
+  },
+  {
+   "coin": "yfi",
+   "first_bar": "2020-08-10",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1882038104.26144,
+   "eligible": true
+  },
+  {
+   "coin": "tlm",
+   "first_bar": "2021-04-13",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1841044682.59608,
+   "eligible": true
+  },
+  {
+   "coin": "dusk",
+   "first_bar": "2019-07-22",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1828515538.2171,
+   "eligible": true
+  },
+  {
+   "coin": "ava",
+   "first_bar": "2020-11-24",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1805613455.77972,
+   "eligible": true
+  },
+  {
+   "coin": "mtl",
+   "first_bar": "2019-08-23",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1774409950.1501002,
+   "eligible": true
+  },
+  {
+   "coin": "dia",
+   "first_bar": "2020-09-04",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1762687205.36426,
+   "eligible": true
+  },
+  {
+   "coin": "alice",
+   "first_bar": "2021-03-15",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1754896001.5896099,
+   "eligible": true
+  },
+  {
+   "coin": "ogn",
+   "first_bar": "2020-01-09",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1741121695.8391,
+   "eligible": true
+  },
+  {
+   "coin": "rlc",
+   "first_bar": "2019-11-14",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1718609155.2686,
+   "eligible": true
+  },
+  {
+   "coin": "bel",
+   "first_bar": "2020-09-15",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1694835796.04597,
+   "eligible": true
+  },
+  {
+   "coin": "cvc",
+   "first_bar": "2019-08-27",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 154,
+   "quote_volume_2024": 1690584025.4558,
+   "eligible": false
+  },
+  {
+   "coin": "lsk",
+   "first_bar": "2020-02-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1670986832.1939,
+   "eligible": true
+  },
+  {
+   "coin": "twt",
+   "first_bar": "2021-01-27",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1652879541.7310998,
+   "eligible": true
+  },
+  {
+   "coin": "audio",
+   "first_bar": "2020-10-23",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1626028794.2405,
+   "eligible": true
+  },
+  {
+   "coin": "dodo",
+   "first_bar": "2021-02-19",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1611471766.461,
+   "eligible": true
+  },
+  {
+   "coin": "dash",
+   "first_bar": "2019-03-28",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1570527803.21596,
+   "eligible": true
+  },
+  {
+   "coin": "ctsi",
+   "first_bar": "2020-04-23",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1554392589.408,
+   "eligible": true
+  },
+  {
+   "coin": "strax",
+   "first_bar": "2020-11-18",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 8,
+   "quote_volume_2024": 1494335120.75179,
+   "eligible": false
+  },
+  {
+   "coin": "tfuel",
+   "first_bar": "2019-05-24",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1462370752.63019,
+   "eligible": true
+  },
+  {
+   "coin": "ont",
+   "first_bar": "2018-06-08",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1452026079.5437279,
+   "eligible": true
+  },
+  {
+   "coin": "gtc",
+   "first_bar": "2021-06-10",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1404264697.4775,
+   "eligible": true
+  },
+  {
+   "coin": "ctk",
+   "first_bar": "2020-10-27",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1393637941.92059,
+   "eligible": true
+  },
+  {
+   "coin": "ong",
+   "first_bar": "2019-02-16",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1388492681.2862,
+   "eligible": true
+  },
+  {
+   "coin": "xvs",
+   "first_bar": "2020-10-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1357644275.4650998,
+   "eligible": true
+  },
+  {
+   "coin": "nmr",
+   "first_bar": "2020-08-19",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1269038376.2229,
+   "eligible": true
+  },
+  {
+   "coin": "jst",
+   "first_bar": "2020-08-11",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1264149600.790869,
+   "eligible": true
+  },
+  {
+   "coin": "rif",
+   "first_bar": "2021-01-07",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1263045270.9015498,
+   "eligible": true
+  },
+  {
+   "coin": "qtum",
+   "first_bar": "2018-03-19",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1261393081.5702999,
+   "eligible": true
+  },
+  {
+   "coin": "vtho",
+   "first_bar": "2020-07-17",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1245916525.380878,
+   "eligible": true
+  },
+  {
+   "coin": "win",
+   "first_bar": "2019-08-01",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1155735572.862179,
+   "eligible": true
+  },
+  {
+   "coin": "hive",
+   "first_bar": "2020-04-27",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1122183812.835044,
+   "eligible": true
+  },
+  {
+   "coin": "asr",
+   "first_bar": "2020-12-30",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1120313487.7602,
+   "eligible": true
+  },
+  {
+   "coin": "bat",
+   "first_bar": "2019-03-04",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1091826501.6841002,
+   "eligible": true
+  },
+  {
+   "coin": "iost",
+   "first_bar": "2019-03-22",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1090524335.496311,
+   "eligible": true
+  },
+  {
+   "coin": "psg",
+   "first_bar": "2020-12-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1090437746.6403701,
+   "eligible": true
+  },
+  {
+   "coin": "celr",
+   "first_bar": "2019-03-25",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1067489181.51741,
+   "eligible": true
+  },
+  {
+   "coin": "dgb",
+   "first_bar": "2020-07-20",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 1046139052.103489,
+   "eligible": true
+  },
+  {
+   "coin": "band",
+   "first_bar": "2019-09-18",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 998571612.0847,
+   "eligible": true
+  },
+  {
+   "coin": "mbl",
+   "first_bar": "2020-02-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 996349735.861233,
+   "eligible": true
+  },
+  {
+   "coin": "pundix",
+   "first_bar": "2021-04-09",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 986504619.28151,
+   "eligible": true
+  },
+  {
+   "coin": "knc",
+   "first_bar": "2020-06-12",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 969604769.02497,
+   "eligible": true
+  },
+  {
+   "coin": "tko",
+   "first_bar": "2021-04-07",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 927673044.7200401,
+   "eligible": true
+  },
+  {
+   "coin": "bar",
+   "first_bar": "2021-04-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 863623817.6628,
+   "eligible": true
+  },
+  {
+   "coin": "sfp",
+   "first_bar": "2021-02-08",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 819601168.6889,
+   "eligible": true
+  },
+  {
+   "coin": "atm",
+   "first_bar": "2020-12-30",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 713204840.994357,
+   "eligible": true
+  },
+  {
+   "coin": "bnt",
+   "first_bar": "2020-02-06",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 652072850.88324,
+   "eligible": true
+  },
+  {
+   "coin": "juv",
+   "first_bar": "2020-12-21",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 545231059.89817,
+   "eligible": true
+  },
+  {
+   "coin": "dcr",
+   "first_bar": "2020-07-30",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 524522061.82935,
+   "eligible": true
+  },
+  {
+   "coin": "acm",
+   "first_bar": "2021-02-24",
+   "last_bar": "2026-10-14",
+   "max_gap_days": 1,
+   "quote_volume_2024": 429146862.9495,
+   "eligible": true
+  }
+ ]
+}

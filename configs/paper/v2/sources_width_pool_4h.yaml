@@ -1,0 +1,19 @@
+# Review of 2026-11-17 (source ablation confounded with encoder width): the two-source model of
+# sources_pool_4h.yaml at the per-source width of the four-source model. In sources_pool_4h.yaml
+# every model has 20,000 parameters, so the two-source model has wider encoders (13 quaternions,
+# 27 real units per source) than the four-source one (9 and 18). A budget of 10,256 parameters
+# gives the two-source model exactly 9 quaternions (10,256 parameters) and its real twin 18 units
+# (9,806 parameters) per source. Fixed before any run.
+name: v2_sources_width_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+groupsets:
+  PMC: [price, market, calendar]
+models: []
+pooled_models: [hq_concat-L2+cal, hl_concat-L2+cal]
+match: {hl_concat-L2+cal: hq_concat-L2+cal}
+seeds: [0, 1, 2]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 10256
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}

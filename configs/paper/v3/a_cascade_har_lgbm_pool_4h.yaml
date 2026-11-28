@@ -1,0 +1,19 @@
+# V3 three-model cascade HAR -> LightGBM -> network (asked for by the advisor, 2026-11-18, in the
+# orders 'HAR + LightGBM + HQLSTM' and 'HAR + HQLSTM + LightGBM'; fixed before the run).
+# As configs/paper/v3/a_cascade_har_pool_4h.yaml, with two stages in the place of HAR alone: HAR, then the lagged
+# LightGBM-S fitted on its residual (experiments/paper_v3_cascade.py offsets harlgbm; both out of fold over five
+# blocks of time on the training rows). Stage 3 is candidate A and its real twin, trained on what the two leave.
+# Five seeds. Nothing is tuned. Read with experiments/paper_v3_triple.py.
+name: v3_a_cascade_har_lgbm_pool_4h
+datasets: [btc_4h, eth_4h, sol_4h, bnb_4h, xrp_4h, ada_4h, doge_4h, link_4h, ltc_4h, dot_4h, avax_4h, trx_4h, bch_4h, xlm_4h, atom_4h]
+tasks: [range]
+offset_dir: offsets/v3_cascade_har_lgbm_4h
+groupsets:
+  PRMC: [price_r, market, calendar]
+models: []
+pooled_models: [hq_gattn, hl_gattn]
+seeds: [0, 1, 2, 3, 4]
+window: {4h: 42}
+folds: {n: 4, test_days: 135, val_days: 180}
+budget: 20000
+train: {lr: 0.001, batch_size: 128, max_epochs: 150, patience: 10, grad_clip: 1.0}
